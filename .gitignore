@@ -1,0 +1,15 @@
+# Entorno de Python
+.venv/
+__pycache__/
+*.pyc
+
+# Compilacion con PyInstaller (el .exe se publica en Releases, no en el repo)
+build/
+dist/
+
+# Registro de la aplicacion
+*.log
+
+# Notas locales para Claude Code
+CLAUDE.md
+.claude/

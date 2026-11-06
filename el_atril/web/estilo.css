@@ -1,0 +1,71 @@
+:root{--fondo:#16181d;--panel:#1d2026;--panel2:#242830;--borde:#323843;--texto:#d7dbe2;--tenue:#8b93a1;
+--acento:#6cb2ff;--marca:#7a5d00;--marca2:#c98a00;--boton:#1f3550;--boton-borde:#2f5f8f}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);
+font:15px/1.6 "Segoe UI",system-ui,sans-serif}
+
+/* Barra superior */
+#barra{position:fixed;top:0;left:0;right:0;height:46px;background:var(--panel);border-bottom:1px solid var(--borde);
+display:flex;align-items:center;gap:6px;padding:0 10px;z-index:5}
+#barra button{background:var(--panel2);color:var(--texto);border:1px solid var(--borde);border-radius:6px;
+height:30px;min-width:32px;cursor:pointer;font-size:14px}
+#barra button:hover:not(:disabled){border-color:var(--acento)}
+#barra button:disabled{opacity:.35;cursor:default}
+#barra button.principal{background:var(--boton);border-color:var(--boton-borde);padding:0 12px;margin-right:6px}
+#q{flex:0 1 340px;height:30px;background:var(--fondo);color:var(--texto);border:1px solid var(--borde);
+border-radius:6px;padding:0 10px;font-size:14px;outline:none}
+#q:focus{border-color:var(--acento)}
+#q:disabled{opacity:.35}
+#cuenta{color:var(--tenue);font-size:13px;min-width:70px}
+#titulo{margin-left:auto;color:var(--tenue);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Panel lateral */
+#lado{position:fixed;top:46px;left:0;bottom:0;width:290px;background:var(--panel);border-right:1px solid var(--borde);
+overflow-y:auto;padding:8px 0}
+#lado h4{margin:12px 14px 4px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tenue)}
+#lado a{display:block;padding:5px 14px;color:var(--texto);text-decoration:none;font-size:13.5px;cursor:pointer;
+border-left:3px solid transparent}
+#lado a small{display:block;color:var(--tenue);font-size:11.5px}
+#lado a:hover{background:var(--panel2)}
+#lado a.act{background:var(--panel2);border-left-color:var(--acento)}
+#lado .res{font-size:12.5px;color:var(--tenue);padding:2px 14px 6px 24px;cursor:pointer}
+#lado .res:hover{color:var(--texto)}
+#lado .res b{color:#ffd166;font-weight:600}
+#lado .vacio{margin:6px 14px;color:var(--tenue);font-size:13px}
+#lado .aviso{margin:6px 14px;color:#ffd166;font-size:12.5px}
+
+/* Documento */
+#doc{position:absolute;top:46px;left:290px;right:0;bottom:0;overflow-y:auto;padding:26px 40px 80px}
+#md{max-width:1100px;margin:0 auto}
+#md h1,#md h2,#md h3,#md h4{line-height:1.3;margin:1.6em 0 .5em}
+#md h1{font-size:1.9em;border-bottom:1px solid var(--borde);padding-bottom:.3em;margin-top:.2em}
+#md h2{font-size:1.45em;border-bottom:1px solid var(--borde);padding-bottom:.25em}
+#md h3{font-size:1.2em}#md h4{font-size:1.05em;color:var(--tenue)}
+#md a{color:var(--acento);text-decoration:none}#md a:hover{text-decoration:underline}
+#md a.muerto{color:var(--tenue);cursor:default;text-decoration:none}
+#md code{background:var(--panel2);padding:.1em .35em;border-radius:4px;font:13px Consolas,monospace;color:#f0b97a}
+#md pre{background:var(--panel);border:1px solid var(--borde);border-radius:8px;padding:12px 14px;overflow-x:auto}
+#md pre code{background:none;padding:0;color:var(--texto)}
+#md blockquote{margin:1em 0;padding:.4em 1em;border-left:4px solid var(--acento);background:var(--panel);
+border-radius:0 6px 6px 0;color:#c2c8d2}
+#md blockquote p{margin:.4em 0}
+#md table{border-collapse:collapse;margin:1em 0;display:block;overflow-x:auto;max-width:100%}
+#md th,#md td{border:1px solid var(--borde);padding:6px 11px;vertical-align:top}
+#md th{background:var(--panel2);text-align:left}
+#md tr:nth-child(even) td{background:#1a1d23}
+#md hr{border:0;border-top:1px solid var(--borde);margin:1.6em 0}
+#md li{margin:.15em 0}
+mark{background:var(--marca);color:#fff;border-radius:2px}
+mark.cur{background:var(--marca2);outline:2px solid #ffd166}
+
+/* Pantalla de bienvenida (sin carpeta) y carpeta sin hojas */
+#md .bienvenida{max-width:560px;margin:12vh auto 0;text-align:center}
+#md .bienvenida h1{border:0;font-size:2.4em;margin:0 0 .3em}
+#md .bienvenida p{color:var(--tenue)}
+#md .bienvenida .version{margin-top:3em;font-size:12.5px;opacity:.7}
+button.grande{background:var(--boton);color:#fff;border:1px solid var(--boton-borde);border-radius:8px;
+padding:10px 22px;font-size:16px;cursor:pointer;margin:14px 0 6px}
+button.grande:hover{border-color:var(--acento)}
+
+::-webkit-scrollbar{width:11px;height:11px}::-webkit-scrollbar-thumb{background:#3a404c;border-radius:6px}
+::-webkit-scrollbar-track{background:transparent}
