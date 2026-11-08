@@ -11,7 +11,9 @@ display:flex;align-items:center;gap:6px;padding:0 10px;z-index:5}
 height:30px;min-width:32px;cursor:pointer;font-size:14px}
 #barra button:hover:not(:disabled){border-color:var(--acento)}
 #barra button:disabled{opacity:.35;cursor:default}
-#barra button.principal{background:var(--boton);border-color:var(--boton-borde);padding:0 12px;margin-right:6px}
+#barra button.principal{background:var(--boton);border-color:var(--boton-borde);padding:0 12px}
+#barra #cerrar{background:#4a1f24;border-color:#8f2f3a;color:#ffd7d7;padding:0 10px;margin-right:6px}
+#barra #cerrar:hover:not(:disabled){border-color:#ff6b6b}
 #q{flex:0 1 340px;height:30px;background:var(--fondo);color:var(--texto);border:1px solid var(--borde);
 border-radius:6px;padding:0 10px;font-size:14px;outline:none}
 #q:focus{border-color:var(--acento)}
@@ -31,6 +33,13 @@ border-left:3px solid transparent}
 #lado .res{font-size:12.5px;color:var(--tenue);padding:2px 14px 6px 24px;cursor:pointer}
 #lado .res:hover{color:var(--texto)}
 #lado .res b{color:#ffd166;font-weight:600}
+#lado a.reciente{position:relative;padding-right:34px}
+#lado a.reciente small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lado a.falta{color:var(--tenue);cursor:default}
+#lado .quitar{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;
+line-height:20px;text-align:center;border-radius:4px;color:var(--tenue);font-size:16px;visibility:hidden}
+#lado a.reciente:hover .quitar{visibility:visible}
+#lado .quitar:hover{background:var(--borde);color:var(--texto)}
 #lado .vacio{margin:6px 14px;color:var(--tenue);font-size:13px}
 #lado .aviso{margin:6px 14px;color:#ffd166;font-size:12.5px}
 

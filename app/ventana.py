@@ -3,7 +3,7 @@ import os
 
 import webview
 
-from . import APP_VERSION
+from . import APP_VERSION, recientes
 from .biblioteca import Biblioteca
 
 NOMBRE_APP = 'El Atril'
@@ -35,7 +35,14 @@ class Api:
         self._ventana = None
         self._biblio = None
         if carpeta and os.path.isdir(carpeta):
-            self._biblio = Biblioteca(carpeta)
+            self._usar(carpeta)
+
+    def _usar(self, carpeta):
+        """Abre la carpeta y la anota en las recientes."""
+        self._biblio = Biblioteca(carpeta)
+        recientes.anotar(carpeta)
+        self._poner_titulo()
+        return self._estado()
 
     def _estado(self):
         b = self._biblio
@@ -62,9 +69,27 @@ class Api:
         if not elegida:
             return None
         carpeta = elegida[0] if isinstance(elegida, (list, tuple)) else elegida
-        self._biblio = Biblioteca(carpeta)
+        return self._usar(carpeta)
+
+    def cerrar(self):
+        """Cierra la carpeta abierta (la pagina vuelve a la portada con las recientes)."""
+        self._biblio = None
         self._poner_titulo()
-        return self._estado()
+
+    def recientes(self):
+        """Ultimas carpetas abiertas: [{nombre, ruta, existe}]."""
+        return recientes.listar()
+
+    def abrir_reciente(self, ruta):
+        """Abre una carpeta de la lista de recientes. None si ya no existe."""
+        if not os.path.isdir(ruta):
+            return None
+        return self._usar(ruta)
+
+    def quitar_reciente(self, ruta):
+        """Quita una carpeta de la lista y devuelve la lista nueva."""
+        recientes.quitar(ruta)
+        return recientes.listar()
 
     def listar(self):
         """Indice de la carpeta abierta (para recargar)."""

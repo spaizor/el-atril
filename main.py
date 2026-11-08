@@ -8,7 +8,7 @@ Con el .exe vale lo mismo: tambien se puede arrastrar una carpeta encima del eje
 """
 import sys
 
-from el_atril.ventana import iniciar
+from app.ventana import iniciar
 
 
 def main():

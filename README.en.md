@@ -15,6 +15,9 @@ in El Atril to see the changes.
 ## Features
 
 - **Open any folder** with the *Abrir* (Open) button or Ctrl+O. Subfolders are included.
+- **Recent folders**: on startup, the side panel lists the last folders you opened so you can
+  go back to them with one click (the × removes them from the list). The *Cerrar* (Close) button or Ctrl+W closes the open
+  folder and goes back to that list.
 - **Side panel** listing every page, grouped by folder and shown by its title (the first
   `# Title` in the file).
 - **Starts on the front page**: if there is a `README.md`, `LEEME.md` or `index.md` at the root,
@@ -71,6 +74,7 @@ The same works with the `.exe`, and you can also **drag a folder onto the `.exe`
 | Key | Action |
 |---|---|
 | Ctrl+O | Open another folder |
+| Ctrl+W | Close the folder and go back to the recent list |
 | Ctrl+F | Go to the search box |
 | Enter / Shift+Enter | Next / previous match (also F3 / Shift+F3) |
 | Ctrl+Enter | Search all pages |
@@ -80,9 +84,11 @@ The same works with the `.exe`, and you can also **drag a folder onto the `.exe`
 
 ## Privacy
 
-El Atril does not connect to the internet and does not store anything: it only reads the files
-in the folder you open, and only while it is running. Web links inside your documents open in
-your browser only if you click them.
+El Atril does not connect to the internet and only reads the files in the folder you open. The
+only thing it stores is the list of recently opened folders (their paths, none of their
+content), in `%APPDATA%\El Atril\recientes.json`; delete that file to clear the list.
+
+Web links inside your documents open in your browser only if you click them.
 
 ## Known limitations
 

@@ -13,6 +13,9 @@ de siempre y pulsa F5 en El Atril para ver los cambios.
 ## Características
 
 - **Abre cualquier carpeta** con el botón *Abrir* (o Ctrl+O). Recorre también las subcarpetas.
+- **Carpetas recientes**: al arrancar, el panel lateral muestra las últimas carpetas que has
+  abierto para volver a ellas con un clic (la × las quita de la lista). El botón *Cerrar* (o Ctrl+W) cierra la carpeta abierta y vuelve
+  a esa lista.
 - **Panel lateral** con todas las hojas, agrupadas por carpeta y con el título de cada una
   (el primer `# Título` del fichero).
 - **Arranca en la portada**: si hay un `README.md`, `LEEME.md` o `index.md` en la raíz, empieza
@@ -71,6 +74,7 @@ Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta encima del
 | Tecla | Qué hace |
 |---|---|
 | Ctrl+O | Abrir otra carpeta |
+| Ctrl+W | Cerrar la carpeta y volver a las recientes |
 | Ctrl+F | Ir al buscador |
 | Intro / Mayús+Intro | Coincidencia siguiente / anterior (también F3 / Mayús+F3) |
 | Ctrl+Intro | Buscar en todas las hojas |
@@ -80,9 +84,12 @@ Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta encima del
 
 ## Privacidad
 
-El Atril no se conecta a internet ni guarda nada: solo lee los ficheros de la carpeta que abres,
-y únicamente mientras está abierto. Los enlaces a webs que haya dentro de tus documentos solo se
-abren, en tu navegador, si haces clic en ellos.
+El Atril no se conecta a internet y solo lee los ficheros de la carpeta que abres. Lo único que
+guarda es la lista de las últimas carpetas abiertas (sus rutas, nada de su contenido), en
+`%APPDATA%\El Atril\recientes.json`; si borras ese fichero, la lista empieza de cero.
+
+Los enlaces a webs que haya dentro de tus documentos solo se abren, en tu navegador, si haces
+clic en ellos.
 
 ## Limitaciones conocidas
 
@@ -103,14 +110,16 @@ Markdown se convierte a HTML con [mistune](https://github.com/lepture/mistune).
 | Fichero | Qué hace |
 |---|---|
 | `main.py` | Arranque: crea la ventana, con la carpeta que se le pase o sin ninguna |
-| `el_atril/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML y busca en ellas (Python puro, sin ventana) |
-| `el_atril/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |
-| `el_atril/web/` | La página: `index.html`, `estilo.css` y `app.js` |
+| `app/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML y busca en ellas (Python puro, sin ventana) |
+| `app/recientes.py` | La lista de las últimas carpetas abiertas |
+| `app/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |
+| `app/web/` | La página: `index.html`, `estilo.css` y `app.js` |
 | `build.spec` | Receta de PyInstaller para compilar el `.exe` |
 
 ## Historial de versiones
 
 - **0.5** (06-11-2026): primera version. Boton Abrir (o Ctrl+O) para elegir una carpeta y leer sus hojas .md con panel lateral, enlaces entre hojas, atras y adelante, buscador en la hoja y en todas las hojas, recargar con F5 y los Excel de la carpeta para abrirlos aparte. La carpeta tambien se puede pasar al arrancar o arrastrar encima del .exe.
+- **0.6** (08-11-2026): al arrancar, el panel lateral muestra las ultimas carpetas abiertas para volver a ellas con un clic (se guardan en %APPDATA%\El Atril\recientes.json; las que ya no existen salen en gris y la x las quita de la lista). Boton rojo Cerrar (o Ctrl+W) para cerrar la carpeta abierta y volver a esa lista. El codigo pasa de la carpeta el_atril a app.
 
 ## Licencia
 

@@ -1,4 +1,4 @@
-const APP_VERSION='__APP_VERSION__';   // lo rellena ventana.pagina() con el de el_atril/__init__.py
+const APP_VERSION='__APP_VERSION__';   // lo rellena ventana.pagina() con el de app/__init__.py
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const plegar=s=>Array.from(s).map(c=>c.normalize('NFD')[0].toLowerCase()).join('');
@@ -24,15 +24,43 @@ async function iniciar(){
   if(r)cargar(r);else bienvenida();
 }
 function bienvenida(){
+  carpeta=null;indice=[];hist=[];pos=-1;actual=null;
+  $('q').value='';marcas=[];mi=-1;$('cuenta').textContent='';
   $('md').innerHTML=`<div class="bienvenida"><h1>El Atril</h1>
     <p>Abre una carpeta con documentos Markdown (<code>.md</code>) para leerlos aquí. Verás todas sus hojas
     en el panel de la izquierda, con buscador y enlaces entre ellas.</p>
     <button class="grande" onclick="abrirCarpeta()">📂 Abrir carpeta…</button>
     <p>También con Ctrl+O</p>
     <p class="version">Versión ${APP_VERSION}</p></div>`;
-  $('lado').innerHTML='<p class="vacio">Todavía no hay ninguna carpeta abierta.</p>';
   $('titulo').textContent='';
   activarBarra(false);
+  pintarRecientes();
+}
+async function pintarRecientes(lista){
+  if(!lista)lista=await pywebview.api.recientes();
+  const l=$('lado');l.innerHTML='';
+  if(!lista.length){l.innerHTML='<p class="vacio">Todavía no has abierto ninguna carpeta. Aquí saldrán las últimas que abras.</p>';return}
+  const h=document.createElement('h4');h.textContent='Carpetas recientes';l.appendChild(h);
+  for(const c of lista){
+    const a=document.createElement('a');a.className='reciente'+(c.existe?'':' falta');
+    a.innerHTML=`📁 ${esc(c.nombre)}<small>${c.existe?'':'No se encuentra · '}${esc(c.ruta)}</small>`;
+    a.title=c.existe?c.ruta:'Esta carpeta ya no existe (o está en una unidad que no está conectada)';
+    a.onclick=()=>abrirReciente(c.ruta);
+    const x=document.createElement('span');x.className='quitar';x.textContent='×';x.title='Quitar de la lista';
+    x.onclick=async e=>{e.stopPropagation();pintarRecientes(await pywebview.api.quitar_reciente(c.ruta))};
+    a.appendChild(x);l.appendChild(a);
+  }
+}
+async function cerrarCarpeta(){
+  if(!carpeta)return;
+  await pywebview.api.cerrar();
+  bienvenida();
+}
+async function abrirReciente(ruta){
+  if(abriendo)return;
+  abriendo=true;
+  try{const r=await pywebview.api.abrir_reciente(ruta);if(r)cargar(r);else pintarRecientes()}
+  finally{abriendo=false}
 }
 let abriendo=false;
 async function abrirCarpeta(){
@@ -52,7 +80,7 @@ function cargar(r){
   $('titulo').textContent=r.ruta;
 }
 function activarBarra(si){
-  for(const id of ['recargar','q','prev','next','todas'])$(id).disabled=!si;
+  for(const id of ['cerrar','recargar','q','prev','next','todas'])$(id).disabled=!si;
   flechas();
 }
 function flechas(){$('atras').disabled=pos<=0;$('adelante').disabled=pos>=hist.length-1}
@@ -181,7 +209,7 @@ if(window.pywebview&&window.pywebview.api&&window.pywebview.api.estado)iniciar()
 else window.addEventListener('pywebviewready',iniciar);
 
 document.addEventListener('DOMContentLoaded',()=>{
-  $('abrir').onclick=abrirCarpeta;
+  $('abrir').onclick=abrirCarpeta;$('cerrar').onclick=cerrarCarpeta;
   $('atras').onclick=atras;$('adelante').onclick=adelante;
   $('todas').onclick=buscarTodas;$('recargar').onclick=recargar;
   $('q').addEventListener('input',()=>resaltar($('q').value.trim()));
@@ -194,6 +222,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
   if(e.ctrlKey&&k==='o'){e.preventDefault();abrirCarpeta()}
+  if(e.ctrlKey&&k==='w'){e.preventDefault();cerrarCarpeta()}
   if(e.ctrlKey&&k==='f'&&carpeta){e.preventDefault();$('q').focus();$('q').select()}
   if(e.altKey&&e.key==='ArrowLeft'){e.preventDefault();atras()}
   if(e.altKey&&e.key==='ArrowRight'){e.preventDefault();adelante()}

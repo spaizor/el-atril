@@ -5,7 +5,7 @@
 from PyInstaller.utils.hooks import collect_all
 
 # La pagina (HTML, CSS y JS) va dentro del .exe, en la misma ruta que tiene junto al paquete.
-datas = [('el_atril/web', 'el_atril/web')]
+datas = [('app/web', 'app/web')]
 binaries = []
 hiddenimports = ['mistune']
 
