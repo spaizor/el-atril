@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-tema="__TEMA__">
 <head>
 <meta charset="utf-8">
 <title>El Atril</title>
@@ -11,13 +11,16 @@
   <button id="cerrar" title="Cerrar la carpeta y volver a las recientes (Ctrl+W)" disabled>✕ Cerrar</button>
   <button id="atras" title="Atrás (Alt+←)" disabled>◀</button>
   <button id="adelante" title="Adelante (Alt+→)" disabled>▶</button>
-  <button id="recargar" title="Recargar: vuelve a leer las hojas de la carpeta (F5)" disabled>⟳</button>
   <input id="q" placeholder="Buscar en esta hoja… (Ctrl+F; Intro = siguiente)" autocomplete="off" spellcheck="false" disabled>
   <button id="prev" title="Anterior (Mayús+Intro)" disabled>↑</button>
   <button id="next" title="Siguiente (Intro)" disabled>↓</button>
   <span id="cuenta"></span>
   <button id="todas" title="Buscar en todas las hojas (Ctrl+Intro)" disabled>Buscar en todas</button>
+  <button id="menos" class="letra" title="Letra más pequeña (Ctrl+− o Ctrl+rueda)">A−</button>
+  <button id="letra" class="letra" title="Tamaño de letra. Clic para volver al normal (Ctrl+0)">100%</button>
+  <button id="mas" class="letra" title="Letra más grande (Ctrl++ o Ctrl+rueda)">A+</button>
   <span id="titulo"></span>
+  <button id="tema" title="Cambiar a tema claro"><span>💡</span></button>
 </div>
 <div id="lado"></div>
 <div id="doc"><div id="md"></div></div>

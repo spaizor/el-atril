@@ -11,7 +11,7 @@ FICHERO = os.path.join(os.environ.get('APPDATA') or os.path.expanduser('~'),
                        'El Atril', 'recientes.json')
 
 
-def _clave(ruta):
+def clave(ruta):
     """Para comparar rutas sin que importen mayusculas ni barras."""
     return os.path.normcase(os.path.abspath(ruta))
 
@@ -43,9 +43,9 @@ def listar():
 def anotar(ruta):
     """Pone la carpeta la primera de la lista."""
     ruta = os.path.abspath(ruta)
-    rutas = [r for r in _leer() if _clave(r) != _clave(ruta)]
+    rutas = [r for r in _leer() if clave(r) != clave(ruta)]
     _guardar([ruta] + rutas[:MAXIMO - 1])
 
 
 def quitar(ruta):
-    _guardar([r for r in _leer() if _clave(r) != _clave(ruta)])
+    _guardar([r for r in _leer() if clave(r) != clave(ruta)])

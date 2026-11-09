@@ -8,7 +8,7 @@ navegación atrás / adelante, como si fuera una pequeña web de documentación.
 
 Está pensado para leer documentación: la de un proyecto, unos apuntes, una guía repartida en
 varios ficheros que se enlazan entre sí. Solo lee; para editar los `.md` sigue usando tu editor
-de siempre y pulsa F5 en El Atril para ver los cambios.
+de siempre: El Atril enseña los cambios en cuanto guardas.
 
 ## Características
 
@@ -18,17 +18,34 @@ de siempre y pulsa F5 en El Atril para ver los cambios.
   a esa lista.
 - **Panel lateral** con todas las hojas, agrupadas por carpeta y con el título de cada una
   (el primer `# Título` del fichero).
+- **Índice de la hoja**: debajo de la hoja abierta, en el panel, salen sus títulos para saltar a
+  cada apartado. Se resalta el apartado que estás leyendo.
 - **Arranca en la portada**: si hay un `README.md`, `LEEME.md` o `index.md` en la raíz, empieza
   por ahí.
+- **Sigues donde lo dejaste**: al volver a una carpeta, abre la última hoja que leíste y a la
+  misma altura.
+- **Tamaño de letra** ajustable con los botones *A−* y *A+*, con Ctrl+rueda o con Ctrl+ +/−
+  (Ctrl+0 lo deja normal). Se recuerda para la próxima vez.
 - **Enlaces entre hojas**: un enlace a otro `.md` de la carpeta lo abre dentro de El Atril,
   incluidos los enlaces a un apartado (`hoja.md#apartado`). Los enlaces a webs se abren en tu
   navegador.
+- **Enlaces a otros ficheros** de la carpeta (PDF, imágenes, documentos...): se abren con su
+  programa de Windows, y los enlaces a una carpeta, en el Explorador. Llevan una flechita ↗. Por
+  seguridad, los programas y scripts (`.exe`, `.bat`, `.ps1`, `.py`...) no se abren nunca y salen
+  en gris.
+- **Tema claro y oscuro**: la bombilla de arriba a la derecha cambia de uno a otro. Se recuerda
+  para la próxima vez.
 - **Atrás y adelante** como en un navegador (Alt+← y Alt+→).
 - **Buscador** en la hoja que estás leyendo, que resalta las coincidencias sin distinguir
   mayúsculas ni tildes, y **búsqueda en todas las hojas** con un trocito de contexto de cada
   resultado.
-- **Recargar** (F5) para ver los cambios si estás editando los `.md` a la vez.
+- **Se actualiza solo**: si editas la hoja abierta en otro programa y guardas, El Atril la
+  actualiza en un segundo sin moverte de donde estabas. Las hojas nuevas, renombradas o borradas
+  también aparecen o desaparecen solas del panel. Solo mira las fechas de los ficheros (no vuelve
+  a leer nada hasta que algo cambia), así que no carga el ordenador.
 - **Tablas, listas de tareas, tachado y bloques de código**, además del Markdown normal.
+- **Colores en el código**: los bloques que dicen su lenguaje (` ```python `, ` ```powershell `,
+  ` ```json `...) salen coloreados, en los dos temas. Los bloques sin lenguaje salen sin colores.
 - **Excel de la carpeta** en un apartado propio del panel: se abren con Excel, fuera de El Atril.
 
 ## Requisitos
@@ -80,13 +97,20 @@ Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta encima del
 | Ctrl+Intro | Buscar en todas las hojas |
 | Esc | Borrar la búsqueda |
 | Alt+← / Alt+→ | Atrás / adelante |
-| F5 o Ctrl+R | Recargar la carpeta y la hoja actual |
+| F5 o Ctrl+R | Recargar a mano la carpeta y la hoja actual (ya lo hace solo) |
+| Ctrl+rueda o Ctrl+ +/− | Letra más grande / más pequeña |
+| Ctrl+0 | Letra a su tamaño normal |
 
 ## Privacidad
 
 El Atril no se conecta a internet y solo lee los ficheros de la carpeta que abres. Lo único que
-guarda es la lista de las últimas carpetas abiertas (sus rutas, nada de su contenido), en
-`%APPDATA%\El Atril\recientes.json`; si borras ese fichero, la lista empieza de cero.
+guarda, en `%APPDATA%\El Atril`, es:
+
+- `recientes.json`: la lista de las últimas carpetas abiertas (sus rutas, nada de su contenido).
+- `memoria.json`: el tamaño de letra, el tema y, de cada carpeta, el nombre de la última hoja leída y por
+  dónde ibas.
+
+Si borras esos ficheros, El Atril empieza de cero.
 
 Los enlaces a webs que haya dentro de tus documentos solo se abren, en tu navegador, si haces
 clic en ellos.
@@ -94,8 +118,6 @@ clic en ellos.
 ## Limitaciones conocidas
 
 - **Las imágenes de los `.md` todavía no se ven.**
-- Los enlaces a ficheros que no son `.md` (PDF, imágenes...) no se abren desde El Atril; salen en
-  gris.
 - No entra en carpetas ocultas (las que empiezan por `.`) ni en `node_modules`, `__pycache__`,
   `venv` o `site-packages`, que suelen estar llenas de documentación ajena.
 - En carpetas muy grandes muestra como mucho las primeras 2000 hojas, para no quedarse colgado.
@@ -105,13 +127,15 @@ clic en ellos.
 ## Cómo funciona por dentro
 
 Es una ventana de [pywebview](https://pywebview.flowrl.com/) que muestra una página HTML; el
-Markdown se convierte a HTML con [mistune](https://github.com/lepture/mistune).
+Markdown se convierte a HTML con [mistune](https://github.com/lepture/mistune) y los bloques de
+código se colorean con [Pygments](https://pygments.org/).
 
 | Fichero | Qué hace |
 |---|---|
 | `main.py` | Arranque: crea la ventana, con la carpeta que se le pase o sin ninguna |
 | `app/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML y busca en ellas (Python puro, sin ventana) |
 | `app/recientes.py` | La lista de las últimas carpetas abiertas |
+| `app/memoria.py` | Lo que se recuerda entre sesiones: tamaño de letra, tema y última hoja de cada carpeta |
 | `app/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |
 | `app/web/` | La página: `index.html`, `estilo.css` y `app.js` |
 | `build.spec` | Receta de PyInstaller para compilar el `.exe` |
@@ -120,6 +144,7 @@ Markdown se convierte a HTML con [mistune](https://github.com/lepture/mistune).
 
 - **0.5** (06-11-2026): primera version. Boton Abrir (o Ctrl+O) para elegir una carpeta y leer sus hojas .md con panel lateral, enlaces entre hojas, atras y adelante, buscador en la hoja y en todas las hojas, recargar con F5 y los Excel de la carpeta para abrirlos aparte. La carpeta tambien se puede pasar al arrancar o arrastrar encima del .exe.
 - **0.6** (08-11-2026): al arrancar, el panel lateral muestra las ultimas carpetas abiertas para volver a ellas con un clic (se guardan en %APPDATA%\El Atril\recientes.json; las que ya no existen salen en gris y la x las quita de la lista). Boton rojo Cerrar (o Ctrl+W) para cerrar la carpeta abierta y volver a esa lista. El codigo pasa de la carpeta el_atril a app.
+- **0.7** (09-11-2026): indice de la hoja en el panel para saltar a cada apartado. Al volver a una carpeta abre la ultima hoja leida y a la misma altura. Tamano de letra ajustable (botones A- y A+, Ctrl+rueda, Ctrl +/- y Ctrl+0). Los enlaces a otros ficheros de la carpeta (PDF, imagenes...) se abren con su programa de Windows; los programas y scripts no se abren nunca. Tema claro y oscuro con el boton de la bombilla. Colores en los bloques de codigo que indican su lenguaje (Pygments). La hoja y el panel se actualizan solos cuando los .md cambian en disco y se quita el boton de recargar (F5 sigue funcionando). Letra, tema y ultima hoja de cada carpeta se guardan en %APPDATA%\El Atril\memoria.json.
 
 ## Licencia
 

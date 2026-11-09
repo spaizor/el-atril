@@ -7,8 +7,8 @@ its `.md` pages, formatted and in a dark theme, with a side panel to jump betwee
 and back / forward navigation, like a small documentation website.
 
 It is meant for reading documentation: a project's docs, notes, a guide split into several
-linked files. It is read-only; keep editing your `.md` files in your usual editor and press F5
-in El Atril to see the changes.
+linked files. It is read-only; keep editing your `.md` files in your usual editor and El Atril
+shows the changes as soon as you save.
 
 > The user interface is currently in Spanish only.
 
@@ -20,15 +20,32 @@ in El Atril to see the changes.
   folder and goes back to that list.
 - **Side panel** listing every page, grouped by folder and shown by its title (the first
   `# Title` in the file).
+- **Page outline**: under the open page, the side panel lists its headings so you can jump to
+  each section. The section you are reading is highlighted.
 - **Starts on the front page**: if there is a `README.md`, `LEEME.md` or `index.md` at the root,
   it opens that one first.
+- **Picks up where you left off**: when you go back to a folder, it opens the last page you read,
+  scrolled to the same spot.
+- **Adjustable font size** with the *A−* and *A+* buttons, Ctrl+mouse wheel or Ctrl+ +/−
+  (Ctrl+0 resets it). It is remembered for next time.
 - **Links between pages**: a link to another `.md` in the folder opens inside El Atril,
   including links to a section (`page.md#section`). Web links open in your browser.
+- **Links to other files** in the folder (PDF, images, documents...) open with their Windows
+  program, and links to a folder open in File Explorer. They are marked with a small ↗. For
+  safety, programs and scripts (`.exe`, `.bat`, `.ps1`, `.py`...) are never opened and appear
+  greyed out.
+- **Light and dark theme**: the light bulb at the top right switches between them. It is
+  remembered for next time.
 - **Back and forward** like a browser (Alt+← and Alt+→).
 - **Search** in the current page, highlighting matches regardless of case and accents, and
   **search across all pages** with a short snippet for each result.
-- **Reload** (F5) to see changes while you edit the `.md` files.
+- **Live reload**: if you edit the open page in another program and save it, El Atril updates it
+  within a second without losing your place. New, renamed or deleted pages show up in the
+  panel on their own too. It only checks file dates (it does not re-read anything until a file
+  changes), so it does not slow the computer down.
 - **Tables, task lists, strikethrough and code blocks**, on top of regular Markdown.
+- **Syntax highlighting**: code blocks that name their language (` ```python `, ` ```powershell `,
+  ` ```json `...) are coloured, in both themes. Blocks without a language stay plain.
 - **Excel files in the folder** get their own section in the panel; they open in Excel.
 
 ## Requirements
@@ -80,21 +97,26 @@ The same works with the `.exe`, and you can also **drag a folder onto the `.exe`
 | Ctrl+Enter | Search all pages |
 | Esc | Clear the search |
 | Alt+← / Alt+→ | Back / forward |
-| F5 or Ctrl+R | Reload the folder and the current page |
+| F5 or Ctrl+R | Reload the folder and the current page by hand (it already happens on its own) |
+| Ctrl+wheel or Ctrl+ +/− | Larger / smaller font |
+| Ctrl+0 | Reset the font size |
 
 ## Privacy
 
-El Atril does not connect to the internet and only reads the files in the folder you open. The
-only thing it stores is the list of recently opened folders (their paths, none of their
-content), in `%APPDATA%\El Atril\recientes.json`; delete that file to clear the list.
+El Atril does not connect to the internet and only reads the files in the folder you open. All
+it stores, in `%APPDATA%\El Atril`, is:
+
+- `recientes.json`: the list of recently opened folders (their paths, none of their content).
+- `memoria.json`: the font size, the theme and, for each folder, the name of the last page you read and how
+  far down you were.
+
+Delete those files and El Atril starts from scratch.
 
 Web links inside your documents open in your browser only if you click them.
 
 ## Known limitations
 
 - **Images in `.md` files are not shown yet.**
-- Links to files that are not `.md` (PDF, images...) do not open from El Atril; they appear greyed
-  out.
 - It skips hidden folders (starting with `.`) and `node_modules`, `__pycache__`, `venv` and
   `site-packages`, which are usually full of third-party docs.
 - In very large folders it lists at most the first 2000 pages, so it does not hang.

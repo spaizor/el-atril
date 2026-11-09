@@ -8,6 +8,11 @@ import re
 import unicodedata
 
 import mistune
+from mistune.util import safe_entity
+from pygments import highlight
+from pygments.formatters.html import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
+from pygments.util import ClassNotFound
 
 # Carpetas que no se recorren nunca: ocultas (empiezan por '.') y las de herramientas que
 # solo tienen documentacion de terceros (paquetes, entornos virtuales...).
@@ -18,9 +23,42 @@ HOJAS_INICIO = ('readme.md', 'leeme.md', 'léeme.md', '0_leeme.md', 'index.md')
 
 EXTENSIONES_EXCEL = ('.xlsx', '.xlsm', '.xls')
 
+# Lo que no se abre nunca desde un enlace, porque abrirlo con su programa lo ejecutaria
+# (programas, instaladores, scripts, accesos directos...). Salen en gris.
+EXTENSIONES_BLOQUEADAS = {
+    '.exe', '.com', '.scr', '.pif', '.cpl', '.msc', '.msi', '.msp', '.mst',
+    '.bat', '.cmd', '.ps1', '.psm1', '.psd1', '.vbs', '.vbe', '.js', '.jse', '.wsf', '.wsh', '.ws',
+    '.hta', '.jar', '.py', '.pyw', '.pyc', '.reg', '.inf', '.lnk', '.url', '.scf',
+    '.application', '.appref-ms', '.appx', '.appxbundle', '.msix', '.msixbundle', '.gadget',
+    '.settingcontent-ms', '.library-ms', '.search-ms', '.diagcab', '.chm',
+}
+
 # Tope de hojas por carpeta: si alguien abre una carpeta enorme (C:\, Documentos...) el
 # programa no se queda colgado recorriendolo todo.
 MAX_HOJAS = 2000
+
+
+class _Renderizador(mistune.HTMLRenderer):
+    """HTML de mistune, con colores en los bloques de codigo que dicen su lenguaje (```python).
+
+    Pygments solo pone las clases de cada trozo (palabra clave, texto, comentario...); los
+    colores estan en estilo.css, uno para cada tema. Sin lenguaje, el bloque sale sin colores:
+    adivinarlo falla demasiado.
+    """
+    _formato = HtmlFormatter(nowrap=True)
+
+    def block_code(self, code, info=None):
+        lenguaje = info.strip().split(None, 1)[0] if info and info.strip() else ''
+        if lenguaje:
+            try:
+                lexer = get_lexer_by_name(lenguaje)
+            except ClassNotFound:
+                lexer = None
+            if lexer:
+                clase = self.render_attrs({'class': 'language-' + safe_entity(lenguaje)})
+                coloreado = highlight(code, lexer, self._formato)
+                return f'<pre class="coloreado"><code{clase}>{coloreado}</code></pre>\n'
+        return super().block_code(code, info)
 
 
 def plegar(s):
@@ -39,7 +77,8 @@ class Biblioteca:
         self.nombre = os.path.basename(self.raiz) or self.raiz
         self.truncada = False
         self._md = mistune.create_markdown(
-            escape=False, plugins=['table', 'strikethrough', 'task_lists', 'url'])
+            escape=False, renderer=_Renderizador(escape=False),
+            plugins=['table', 'strikethrough', 'task_lists', 'url'])
 
     # --- Recorrido de la carpeta ---------------------------------------------------------
 
@@ -76,6 +115,40 @@ class Biblioteca:
         except ValueError:  # otra unidad
             return None
         return p
+
+    # --- Vigilar cambios en disco (sin leer ningun fichero, solo fechas y tamanos) ------
+
+    def firma_hoja(self, ruta):
+        """Fecha y tamano de una hoja, o None si no existe. Cambia al guardarla."""
+        p = self.ruta_absoluta(ruta)
+        try:
+            st = os.stat(p) if p else None
+        except OSError:
+            return None
+        return f'{st.st_mtime_ns}-{st.st_size}' if st else None
+
+    def firma_carpeta(self):
+        """Huella de las hojas y Excel de la carpeta: cambia si alguno se crea, se borra, se
+        renombra o se modifica. Usa os.scandir, que en Windows da la fecha de cada fichero sin
+        abrirlo, asi que es rapida incluso con cientos de hojas."""
+        datos, pila = [], [self.raiz]
+        while pila and len(datos) <= MAX_HOJAS * 2:
+            try:
+                entradas = list(os.scandir(pila.pop()))
+            except OSError:
+                continue
+            for e in entradas:
+                try:
+                    if e.is_dir(follow_symlinks=False):
+                        if not e.name.startswith('.') and e.name.lower() not in CARPETAS_IGNORADAS:
+                            pila.append(e.path)
+                    elif (e.name.lower().endswith(('.md',) + EXTENSIONES_EXCEL)
+                          and not e.name.startswith('~$')):
+                        st = e.stat()
+                        datos.append((e.path, st.st_mtime_ns, st.st_size))
+                except OSError:
+                    pass
+        return str(hash(tuple(sorted(datos))))
 
     def texto(self, ruta):
         p = self.ruta_absoluta(ruta)
@@ -117,13 +190,31 @@ class Biblioteca:
         except Exception as e:
             return f'<p>No se pudo abrir <code>{ruta}</code>: {e}</p>'
 
-    def abrir_externo(self, ruta):
-        """Abre un fichero (un Excel) con el programa que tenga asociado Windows."""
+    def estado_enlace(self, ruta):
+        """Que pasa al pinchar un enlace a un fichero de la carpeta que no es una hoja:
+
+        'fichero' o 'carpeta' si se puede abrir, 'bloqueado' si es un programa o script,
+        'falta' si no existe o se sale de la carpeta.
+        """
         p = self.ruta_absoluta(ruta)
-        if p and os.path.isfile(p):
-            os.startfile(p)
-            return True
-        return False
+        if not p:
+            return 'falta'
+        if os.path.isdir(p):
+            return 'carpeta'
+        if not os.path.isfile(p):
+            return 'falta'
+        if os.path.splitext(p)[1].lower() in EXTENSIONES_BLOQUEADAS:
+            return 'bloqueado'
+        return 'fichero'
+
+    def abrir_externo(self, ruta):
+        """Abre un fichero (o una carpeta, en el Explorador) con el programa que tenga
+        asociado Windows. Nunca abre programas ni scripts: abrir un documento no debe
+        poder ejecutar nada."""
+        if self.estado_enlace(ruta) not in ('fichero', 'carpeta'):
+            return False
+        os.startfile(self.ruta_absoluta(ruta))
+        return True
 
     def buscar(self, q):
         """Busca q en todas las hojas. Devuelve por hoja el total y hasta 3 trozos de contexto.
