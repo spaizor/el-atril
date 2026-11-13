@@ -26,7 +26,8 @@ def pagina():
             .replace('/*__CSS__*/', leer('estilo.css'))
             .replace('/*__JS__*/', leer('app.js'))
             .replace('__APP_VERSION__', APP_VERSION)
-            .replace('__TEMA__', memoria.tema()))   # asi la pagina ya nace con su tema
+            .replace('__MODO__', memoria.tema())
+            .replace('__TEMA__', memoria.tema_efectivo()))   # asi la pagina ya nace con su tema
 
 
 class Api:
@@ -36,11 +37,17 @@ class Api:
     pywebview no intente recorrerlos.
     """
 
-    def __init__(self, carpeta=None):
+    def __init__(self, ruta=None):
+        """ruta: la carpeta que abrir al arrancar, o una hoja .md (se abre su carpeta en ella)."""
         self._ventana = None
         self._biblio = None
-        if carpeta and os.path.isdir(carpeta):
-            self._usar(carpeta)
+        self._hoja_pedida = None   # hoja .md pasada al arrancar; se usa una sola vez
+        if ruta and os.path.isdir(ruta):
+            self._usar(ruta)
+        elif ruta and os.path.isfile(ruta) and ruta.lower().endswith('.md'):
+            ruta = os.path.abspath(ruta)
+            self._usar(os.path.dirname(ruta))
+            self._hoja_pedida = os.path.basename(ruta)   # despues: _usar() ya llama a _estado()
 
     def _usar(self, carpeta):
         """Abre la carpeta y la anota en las recientes."""
@@ -59,6 +66,15 @@ class Api:
         p = memoria.posicion(b.raiz)
         if p and any(f['ruta'] == p['hoja'] and f['tipo'] == 'md' for f in indice):
             inicio, scroll = p['hoja'], p['scroll']
+        # Si se arranco con una hoja concreta (doble clic, "Abrir con", arrastrar), manda esa.
+        # Se busca sin distinguir mayusculas para que valga como la escriba Windows.
+        pedida, self._hoja_pedida = self._hoja_pedida, None
+        if pedida:
+            hoja = next((f['ruta'] for f in indice
+                         if f['tipo'] == 'md' and f['ruta'].lower() == pedida.lower()), None)
+            if hoja:
+                scroll = scroll if hoja == inicio else 0
+                inicio = hoja
         return {'nombre': b.nombre, 'ruta': b.raiz, 'indice': indice,
                 'inicio': inicio, 'scroll': scroll, 'truncada': b.truncada}
 
@@ -133,12 +149,18 @@ class Api:
         return {r: self._biblio.estado_enlace(r) for r in rutas if isinstance(r, str)}
 
     def tema(self):
-        """Tema guardado: 'oscuro' o 'claro'."""
-        return memoria.tema()
+        """Modo guardado ('sistema', 'oscuro' o 'claro') y el tema que toca con el."""
+        modo = memoria.tema()
+        return {'modo': modo, 'tema': memoria.tema_efectivo(modo)}
 
     def poner_tema(self, valor):
-        """Guarda el tema y devuelve el que queda."""
-        return memoria.poner_tema(valor)
+        """Guarda el modo y devuelve {modo, tema} como queda."""
+        modo = memoria.poner_tema(valor)
+        return {'modo': modo, 'tema': memoria.tema_efectivo(modo)}
+
+    def tema_windows(self):
+        """'claro' u 'oscuro' segun Windows (la pagina lo mira cada poco en modo sistema)."""
+        return memoria.tema_windows()
 
     def letra(self):
         """Tamano de letra guardado (en %)."""
@@ -153,12 +175,12 @@ class Api:
         memoria.recordar(carpeta, hoja, scroll)
 
 
-def iniciar(carpeta=None):
+def iniciar(ruta=None):
     """Crea la ventana y se queda en ella hasta que se cierra."""
-    api = Api(carpeta)
+    api = Api(ruta)
     # La ventana se guarda despues de crearla porque necesita la Api; no puede ser un metodo
     # publico de Api, porque pywebview lo dejaria llamar desde la pagina.
     api._ventana = webview.create_window(  # pylint: disable=protected-access
         NOMBRE_APP, html=pagina(), js_api=api, width=1380, height=860,
-        background_color=FONDOS[memoria.tema()], min_size=(900, 560))
+        background_color=FONDOS[memoria.tema_efectivo()], min_size=(900, 560))
     webview.start()

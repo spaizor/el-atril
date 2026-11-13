@@ -26,6 +26,7 @@ function resolver(base,href){
 
 async function iniciar(){
   ponerLetra(await pywebview.api.letra());
+  iniciarTema();
   const r=await pywebview.api.estado();
   if(r)cargar(r);else bienvenida();
 }
@@ -298,15 +299,45 @@ function cambiarLetra(v){
 }
 
 // --- Tema claro / oscuro ---------------------------------------------------------------
-// La página ya nace con su tema (ventana.pagina() rellena data-tema), así no parpadea.
+// La página ya nace con su tema (ventana.pagina() rellena data-tema y data-modo), así no
+// parpadea. data-modo es lo elegido: 'sistema' (sigue a Windows), 'oscuro' o 'claro';
+// data-tema es el que se ve. La bombilla da la vuelta: Windows → el contrario del que se ve →
+// el mismo que Windows → otra vez Windows (así cada clic cambia algo).
 
-function pintarTema(){
-  $('tema').title=document.documentElement.dataset.tema==='claro'?'Cambiar a tema oscuro':'Cambiar a tema claro';
+const ACCION_MODO={sistema:'seguir el tema de Windows',claro:'pasar al tema claro',oscuro:'pasar al tema oscuro'};
+let temaWindows=null;        // 'claro' u 'oscuro' según Windows (se mira cada 2 s en modo sistema)
+let tTema=0;
+
+function siguienteModo(){
+  const {modo,tema}=document.documentElement.dataset;
+  if(modo==='sistema')return tema==='claro'?'oscuro':'claro';
+  return modo===temaWindows?'sistema':(modo==='claro'?'oscuro':'claro');
 }
-function cambiarTema(){
-  const t=document.documentElement.dataset.tema==='claro'?'oscuro':'claro';
-  document.documentElement.dataset.tema=t;pintarTema();
-  pywebview.api.poner_tema(t);
+function pintarTema(){
+  const {modo,tema}=document.documentElement.dataset;
+  const ahora=modo==='sistema'?`el de Windows (ahora ${tema})`:tema;
+  $('tema').title=`Tema: ${ahora}. Clic para ${ACCION_MODO[siguienteModo()]}`;
+}
+function ponerTema(modo,tema){
+  const d=document.documentElement.dataset;
+  d.modo=modo;d.tema=tema;pintarTema();
+  clearInterval(tTema);
+  if(modo==='sistema')tTema=setInterval(mirarWindows,2000);
+}
+async function mirarWindows(){
+  temaWindows=await pywebview.api.tema_windows();
+  const d=document.documentElement.dataset;
+  if(d.modo==='sistema'&&d.tema!==temaWindows)ponerTema('sistema',temaWindows);
+  else pintarTema();
+}
+async function cambiarTema(){
+  const r=await pywebview.api.poner_tema(siguienteModo());
+  ponerTema(r.modo,r.tema);
+}
+async function iniciarTema(){
+  const d=document.documentElement.dataset;
+  await mirarWindows();
+  ponerTema(d.modo,d.tema);
 }
 
 // --- Búsqueda --------------------------------------------------------------------------
@@ -397,7 +428,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('prev').onclick=()=>siguiente(-1);$('next').onclick=()=>siguiente(1);
   $('menos').onclick=()=>cambiarLetra(letra-10);$('mas').onclick=()=>cambiarLetra(letra+10);
   $('letra').onclick=()=>cambiarLetra(100);
-  $('tema').onclick=cambiarTema;pintarTema();
+  $('tema').onclick=cambiarTema;
   let raf=0;
   $('doc').addEventListener('scroll',()=>{
     if(!raf)raf=requestAnimationFrame(()=>{raf=0;marcarApartado()});

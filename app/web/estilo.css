@@ -41,8 +41,11 @@ border-radius:6px;padding:0 10px;font-size:14px;outline:none}
 #barra button.letra{font-size:13px;padding:0 6px}
 #barra #letra{min-width:48px;font-size:12px;color:var(--tenue)}
 #titulo{margin-left:auto;color:var(--tenue);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Bombilla del tema: apagada (gris) en el oscuro, encendida en el claro */
-#barra #tema{font-size:15px;padding:0;margin-left:4px}
+/* Bombilla del tema: apagada (gris) en el oscuro, encendida en el claro. Con una "A" pequena
+   cuando sigue el tema de Windows (modo automatico). */
+#barra #tema{font-size:15px;padding:0;margin-left:4px;position:relative}
+#barra #tema b{display:none;position:absolute;right:1px;bottom:0;font-size:9px;line-height:1;color:var(--acento)}
+:root[data-modo="sistema"] #barra #tema b{display:block}
 #barra #tema span{display:inline-block;filter:grayscale(1);opacity:.6}
 :root[data-tema="claro"] #barra #tema span{filter:none;opacity:1}
 
@@ -112,6 +115,10 @@ border-radius:0 6px 6px 0;color:var(--cita)}
 #md tr:nth-child(even) td{background:var(--fila)}
 #md hr{border:0;border-top:1px solid var(--borde);margin:1.6em 0}
 #md li{margin:.15em 0}
+#md img{max-width:100%;height:auto}
+/* Imagen que no se puede ensenar (no esta, fuera de la carpeta, demasiado grande...) */
+#md .img-rota{display:inline-block;padding:2px 8px;border:1px dashed var(--borde);border-radius:6px;
+color:var(--tenue);font-size:.9em;cursor:help}
 mark{background:var(--marca);color:var(--marca-texto);border-radius:2px}
 mark.cur{background:var(--marca2);outline:2px solid var(--resalte)}
 

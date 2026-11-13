@@ -3,7 +3,7 @@
 *[English version](README.en.md)*
 
 Lector de Markdown para Windows. Abres una carpeta y El Atril te enseña todas sus hojas `.md`
-con formato, en tema oscuro, con un panel lateral para saltar de una a otra, buscador y
+con formato, en tema claro u oscuro, con un panel lateral para saltar de una a otra, buscador y
 navegación atrás / adelante, como si fuera una pequeña web de documentación.
 
 Está pensado para leer documentación: la de un proyecto, unos apuntes, una guía repartida en
@@ -33,8 +33,13 @@ de siempre: El Atril enseña los cambios en cuanto guardas.
   programa de Windows, y los enlaces a una carpeta, en el Explorador. Llevan una flechita ↗. Por
   seguridad, los programas y scripts (`.exe`, `.bat`, `.ps1`, `.py`...) no se abren nunca y salen
   en gris.
-- **Tema claro y oscuro**: la bombilla de arriba a la derecha cambia de uno a otro. Se recuerda
-  para la próxima vez.
+- **Tema claro y oscuro**: de serie sigue el de Windows (y cambia solo si lo cambias en
+  Windows). La bombilla de arriba a la derecha pasa a claro, a oscuro o vuelve a seguir a Windows
+  (con una «A» pequeña). Se recuerda para la próxima vez.
+- **Imágenes**: se ven las imágenes de la carpeta que salen en las hojas (`![texto](foto.png)` o
+  `<img src="foto.png">`), con la ruta relativa a la hoja, como los enlaces. Las de internet no
+  se cargan: sale un recuadro con su texto, igual que si la imagen no está o es demasiado grande
+  (más de 15 MB).
 - **Atrás y adelante** como en un navegador (Alt+← y Alt+→).
 - **Buscador** en la hoja que estás leyendo, que resalta las coincidencias sin distinguir
   mayúsculas ni tildes, y **búsqueda en todas las hojas** con un trocito de contexto de cada
@@ -84,7 +89,16 @@ pasarle la carpeta al arrancar, y así se abre directamente:
 .venv\Scripts\python main.py "C:\ruta\a\mis documentos"
 ```
 
-Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta encima del `.exe`**.
+En vez de una carpeta también puedes pasarle una hoja `.md`: se abre su carpeta, directamente
+en esa hoja.
+
+```powershell
+.venv\Scripts\python main.py "C:\ruta\a\mis documentos\guia.md"
+```
+
+Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta o un `.md` encima del
+`.exe`**. Para abrir los `.md` con doble clic: botón derecho sobre un `.md` → *Abrir con* →
+*Elegir otra aplicación* → busca `El Atril.exe` y marca *Usar siempre esta aplicación*.
 
 ### Atajos de teclado
 
@@ -113,11 +127,10 @@ guarda, en `%APPDATA%\El Atril`, es:
 Si borras esos ficheros, El Atril empieza de cero.
 
 Los enlaces a webs que haya dentro de tus documentos solo se abren, en tu navegador, si haces
-clic en ellos.
+clic en ellos, y las imágenes de internet no se cargan.
 
 ## Limitaciones conocidas
 
-- **Las imágenes de los `.md` todavía no se ven.**
 - No entra en carpetas ocultas (las que empiezan por `.`) ni en `node_modules`, `__pycache__`,
   `venv` o `site-packages`, que suelen estar llenas de documentación ajena.
 - En carpetas muy grandes muestra como mucho las primeras 2000 hojas, para no quedarse colgado.
@@ -132,8 +145,8 @@ código se colorean con [Pygments](https://pygments.org/).
 
 | Fichero | Qué hace |
 |---|---|
-| `main.py` | Arranque: crea la ventana, con la carpeta que se le pase o sin ninguna |
-| `app/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML y busca en ellas (Python puro, sin ventana) |
+| `main.py` | Arranque: crea la ventana, con la carpeta o la hoja `.md` que se le pase, o sin ninguna |
+| `app/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML (con sus imágenes dentro) y busca en ellas (Python puro, sin ventana) |
 | `app/recientes.py` | La lista de las últimas carpetas abiertas |
 | `app/memoria.py` | Lo que se recuerda entre sesiones: tamaño de letra, tema y última hoja de cada carpeta |
 | `app/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |

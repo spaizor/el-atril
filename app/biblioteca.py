@@ -3,9 +3,12 @@
 No depende de la ventana (pywebview): todo es Python puro y se puede probar por separado.
 Las rutas que se intercambian con la pagina son relativas a la carpeta y con '/' como separador.
 """
+import base64
+import html
 import os
 import re
 import unicodedata
+from urllib.parse import unquote
 
 import mistune
 from mistune.util import safe_entity
@@ -32,6 +35,20 @@ EXTENSIONES_BLOQUEADAS = {
     '.application', '.appref-ms', '.appx', '.appxbundle', '.msix', '.msixbundle', '.gadget',
     '.settingcontent-ms', '.library-ms', '.search-ms', '.diagcab', '.chm',
 }
+
+# Imagenes que se ensenan dentro de las hojas. La pagina se carga como texto, sin ruta base,
+# asi que cada imagen de la carpeta va metida en el HTML (data: URI en base64).
+TIPOS_IMAGEN = {
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
+    '.webp': 'image/webp', '.svg': 'image/svg+xml', '.bmp': 'image/bmp', '.ico': 'image/x-icon',
+    '.avif': 'image/avif',
+}
+MAX_IMAGEN = 15 * 1024 * 1024        # una imagen mas grande no se mete (sale el aviso)
+MAX_IMAGENES_HOJA = 60 * 1024 * 1024  # entre todas las de una hoja, para que no se atasque
+
+_IMG = re.compile(r'<img\b[^>]*>', re.I)
+_SRC = re.compile(r'''(\ssrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s>]+))''', re.I)
+_ALT = re.compile(r'''\salt\s*=\s*(?:"([^"]*)"|'([^']*)')''', re.I)
 
 # Tope de hojas por carpeta: si alguien abre una carpeta enorme (C:\, Documentos...) el
 # programa no se queda colgado recorriendolo todo.
@@ -184,11 +201,69 @@ class Biblioteca:
         return hojas[0] if hojas else None
 
     def leer(self, ruta):
-        """HTML de una hoja .md."""
+        """HTML de una hoja .md, con sus imagenes dentro."""
         try:
-            return self._md(self.texto(ruta))
+            return self._imagenes(ruta, self._md(self.texto(ruta)))
         except Exception as e:
-            return f'<p>No se pudo abrir <code>{ruta}</code>: {e}</p>'
+            return f'<p>No se pudo abrir <code>{html.escape(ruta)}</code>: {html.escape(str(e))}</p>'
+
+    def _imagenes(self, ruta, codigo):
+        """Cambia el src de las imagenes de la carpeta por su contenido (data: URI).
+
+        Vale para las de Markdown (![](foto.png)) y las de HTML (<img src="foto.png">). Las
+        rutas son relativas a la hoja, como los enlaces. Las de internet (https:) no se cargan,
+        para no conectarse a nada. Esas, y las que no se encuentran, se salen de la carpeta o
+        son demasiado grandes, se cambian por un aviso con su texto alternativo.
+        """
+        base = os.path.dirname(ruta)
+        gastado = 0
+
+        def cambiar(m):
+            nonlocal gastado
+            etiqueta = m.group(0)
+            s = _SRC.search(etiqueta)
+            if not s:
+                return etiqueta
+            src = html.unescape(next(g for g in s.groups()[1:] if g is not None)).strip()
+            if not src or src.lower().startswith('data:'):
+                return etiqueta
+            a = _ALT.search(etiqueta)
+            alt = html.unescape(next((g for g in a.groups() if g is not None), '')) if a else ''
+            if re.match(r'^https?:', src, re.I):
+                # Las de internet no se cargan (El Atril no se conecta a nada): queda el aviso
+                # con su texto. Si la imagen esta dentro de un enlace (las insignias de los
+                # README), el enlace sigue funcionando.
+                return (f'<span class="img-rota" title="Imagen de internet (no se carga): '
+                        f'{html.escape(src)}">🖼 {html.escape(alt or "Imagen de internet")}</span>')
+            motivo = None
+            if re.match(r'^[a-z][a-z0-9+.-]*:', src, re.I) or src.startswith(('/', '\\')):
+                motivo = 'Solo se enseñan imágenes de esta carpeta'
+            else:
+                rel = unquote(src.split('#', 1)[0].split('?', 1)[0])
+                p = self.ruta_absoluta(os.path.join(base, rel))
+                tipo = TIPOS_IMAGEN.get(os.path.splitext(rel)[1].lower())
+                if not p or not os.path.isfile(p):
+                    motivo = 'No se encuentra esta imagen en la carpeta'
+                elif not tipo:
+                    motivo = 'Este tipo de imagen no se puede enseñar'
+                else:
+                    tam = os.path.getsize(p)
+                    if tam > MAX_IMAGEN or gastado + tam > MAX_IMAGENES_HOJA:
+                        motivo = 'Imagen demasiado grande para enseñarla aquí'
+                    else:
+                        try:
+                            with open(p, 'rb') as f:
+                                datos = base64.b64encode(f.read()).decode('ascii')
+                        except OSError:
+                            motivo = 'No se pudo leer esta imagen'
+                        else:
+                            gastado += tam
+                            return (etiqueta[:s.start()] + f'{s.group(1)}"data:{tipo};base64,{datos}"'
+                                    + etiqueta[s.end():])
+            return (f'<span class="img-rota" title="{html.escape(motivo)}: {html.escape(src)}">'
+                    f'🖼 {html.escape(alt or os.path.basename(src) or src)}</span>')
+
+        return _IMG.sub(cambiar, codigo)
 
     def estado_enlace(self, ruta):
         """Que pasa al pinchar un enlace a un fichero de la carpeta que no es una hoja:

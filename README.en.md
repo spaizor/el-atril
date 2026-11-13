@@ -3,7 +3,7 @@
 *[Versión en español](README.md)*
 
 A Markdown reader for Windows. Open a folder and El Atril (Spanish for *the lectern*) shows all
-its `.md` pages, formatted and in a dark theme, with a side panel to jump between them, search,
+its `.md` pages, formatted, in a light or dark theme, with a side panel to jump between them, search,
 and back / forward navigation, like a small documentation website.
 
 It is meant for reading documentation: a project's docs, notes, a guide split into several
@@ -34,8 +34,13 @@ shows the changes as soon as you save.
   program, and links to a folder open in File Explorer. They are marked with a small ↗. For
   safety, programs and scripts (`.exe`, `.bat`, `.ps1`, `.py`...) are never opened and appear
   greyed out.
-- **Light and dark theme**: the light bulb at the top right switches between them. It is
-  remembered for next time.
+- **Light and dark theme**: by default it follows Windows (and switches on its own when you
+  change it in Windows). The light bulb at the top right switches to light, to dark, or back to
+  following Windows (shown with a small "A"). It is remembered for next time.
+- **Images**: images from the folder used in your pages (`![text](photo.png)` or
+  `<img src="photo.png">`) are shown, with paths relative to the page, like links. Images from
+  the internet are not loaded: a small box with their text is shown instead, the same as when an
+  image is missing or too large (over 15 MB).
 - **Back and forward** like a browser (Alt+← and Alt+→).
 - **Search** in the current page, highlighting matches regardless of case and accents, and
   **search across all pages** with a short snippet for each result.
@@ -84,7 +89,15 @@ You can also pass the folder on start-up to open it straight away:
 .venv\Scripts\python main.py "C:\path\to\my docs"
 ```
 
-The same works with the `.exe`, and you can also **drag a folder onto the `.exe`**.
+Instead of a folder you can also pass a `.md` page: its folder opens, right on that page.
+
+```powershell
+.venv\Scripts\python main.py "C:\path\to\my docs\guide.md"
+```
+
+The same works with the `.exe`, and you can also **drag a folder or a `.md` file onto the
+`.exe`**. To open `.md` files with a double click: right-click a `.md` file → *Open with* →
+*Choose another app* → find `El Atril.exe` and tick *Always use this app*.
 
 ### Keyboard shortcuts
 
@@ -112,11 +125,11 @@ it stores, in `%APPDATA%\El Atril`, is:
 
 Delete those files and El Atril starts from scratch.
 
-Web links inside your documents open in your browser only if you click them.
+Web links inside your documents open in your browser only if you click them, and images from
+the internet are not loaded.
 
 ## Known limitations
 
-- **Images in `.md` files are not shown yet.**
 - It skips hidden folders (starting with `.`) and `node_modules`, `__pycache__`, `venv` and
   `site-packages`, which are usually full of third-party docs.
 - In very large folders it lists at most the first 2000 pages, so it does not hang.

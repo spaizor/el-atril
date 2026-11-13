@@ -1,7 +1,7 @@
 """Lo que El Atril recuerda entre sesiones, en %APPDATA%\\El Atril\\memoria.json:
 
 - el tamano de letra elegido (en %, 100 = normal);
-- el tema (oscuro o claro);
+- el tema: el de Windows (por defecto), oscuro o claro;
 - de cada carpeta, la ultima hoja que se leyo y por donde iba (scroll de 0 a 1).
 
 Va en un fichero aparte de recientes.json para no cambiar el formato de ese.
@@ -58,15 +58,36 @@ def poner_letra(valor):
 
 
 TEMAS = ('oscuro', 'claro')
+MODOS = ('sistema',) + TEMAS   # 'sistema' = el que tenga Windows (aplicaciones claras u oscuras)
+
+
+def tema_windows():
+    """'claro' u 'oscuro', segun el modo de las aplicaciones de Windows (Configuracion >
+    Personalizacion > Colores). Si no se puede leer, 'claro', que es el de Windows de serie."""
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize') as k:
+            valor, _ = winreg.QueryValueEx(k, 'AppsUseLightTheme')
+        return 'claro' if valor else 'oscuro'
+    except (ImportError, OSError):
+        return 'claro'
 
 
 def tema():
+    """Modo elegido: 'sistema', 'oscuro' o 'claro'."""
     v = _leer().get('tema')
-    return v if v in TEMAS else TEMAS[0]
+    return v if v in MODOS else MODOS[0]
+
+
+def tema_efectivo(modo=None):
+    """El tema que toca ahora: el elegido, o el de Windows si se sigue al sistema."""
+    modo = modo or tema()
+    return tema_windows() if modo == 'sistema' else modo
 
 
 def poner_tema(valor):
-    v = valor if valor in TEMAS else TEMAS[0]
+    v = valor if valor in MODOS else MODOS[0]
     with _cerrojo:
         datos = _leer()
         datos['tema'] = v
