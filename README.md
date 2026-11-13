@@ -150,7 +150,8 @@ código se colorean con [Pygments](https://pygments.org/).
 | `app/recientes.py` | La lista de las últimas carpetas abiertas |
 | `app/memoria.py` | Lo que se recuerda entre sesiones: tamaño de letra, tema y última hoja de cada carpeta |
 | `app/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |
-| `app/web/` | La página: `index.html`, `estilo.css` y `app.js` |
+| `app/web/` | La página: `index.html`, `estilo.css` y `app.js`, y el icono `icono.ico` |
+| `icono/` | El dibujo del icono en SVG: `icono.svg` y `icono_pequeno.svg` (para 16-24 px) |
 | `build.spec` | Receta de PyInstaller para compilar el `.exe` |
 
 ## Historial de versiones

@@ -13,3 +13,6 @@ dist/
 # Notas locales para Claude Code
 CLAUDE.md
 .claude/
+
+# Script local para generar app/web/icono.ico desde los SVG (no se publica)
+icono/hacer_icono.py

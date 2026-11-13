@@ -36,6 +36,8 @@ exe = EXE(
     a.datas,
     [],
     name='El Atril',
+    # Icono del .exe en el Explorador (el de la ventana lo pone ventana.py con el mismo fichero).
+    icon='app/web/icono.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

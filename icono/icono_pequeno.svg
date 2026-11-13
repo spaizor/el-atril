@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<!-- Icono de El Atril simplificado para 16-24 px: tablero, hoja con un # grande y patas gruesas. -->
+<defs>
+<linearGradient id="metal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1b3f7a"/><stop offset=".45" stop-color="#4f8fe6"/><stop offset="1" stop-color="#173a72"/></linearGradient>
+<linearGradient id="metalV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a8fe8"/><stop offset="1" stop-color="#173f88"/></linearGradient>
+</defs>
+<path d="M128 170 L44 244" stroke="url(#metalV)" stroke-width="30" stroke-linecap="round"/>
+<path d="M128 170 L212 244" stroke="url(#metalV)" stroke-width="30" stroke-linecap="round"/>
+<rect x="112" y="160" width="32" height="90" rx="10" fill="url(#metal)"/>
+<rect x="4" y="2" width="248" height="180" rx="20" fill="url(#metalV)"/>
+<rect x="30" y="22" width="196" height="132" rx="6" fill="#fff"/>
+<!-- # dibujado con barras para que quede nitido -->
+<g fill="#1a5fd0">
+ <rect x="88" y="30" width="26" height="116" rx="4"/>
+ <rect x="142" y="30" width="26" height="116" rx="4"/>
+ <rect x="56" y="56" width="144" height="24" rx="4"/>
+ <rect x="56" y="98" width="144" height="24" rx="4"/>
+</g>
+<rect x="0" y="146" width="256" height="40" rx="12" fill="url(#metal)"/>
+</svg>

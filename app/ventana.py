@@ -16,6 +16,21 @@ FONDOS = {'oscuro': '#16181d', 'claro': '#ffffff'}
 # porque el .spec copia la carpeta 'web' junto al paquete.
 CARPETA_WEB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web')
 
+# Icono de la ventana y de la barra de tareas (se hace con icono/hacer_icono.py).
+ICONO = os.path.join(CARPETA_WEB, 'icono.ico')
+
+# Identificador propio para la barra de tareas: sin el, lanzado como script, Windows agrupa
+# la ventana con python.exe y ensena su icono.
+ID_BARRA_TAREAS = 'spaizor.ElAtril'
+
+
+def _identificar_en_barra_de_tareas():
+    try:
+        import ctypes  # pylint: disable=import-outside-toplevel
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(ID_BARRA_TAREAS)
+    except (AttributeError, OSError):
+        pass
+
 
 def pagina():
     """HTML completo con el CSS y el JS dentro (se carga como texto, sin servidor)."""
@@ -183,4 +198,5 @@ def iniciar(ruta=None):
     api._ventana = webview.create_window(  # pylint: disable=protected-access
         NOMBRE_APP, html=pagina(), js_api=api, width=1380, height=860,
         background_color=FONDOS[memoria.tema_efectivo()], min_size=(900, 560))
-    webview.start()
+    _identificar_en_barra_de_tareas()
+    webview.start(icon=ICONO)
