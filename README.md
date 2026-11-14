@@ -36,6 +36,12 @@ de siempre: El Atril enseña los cambios en cuanto guardas.
 - **Tema claro y oscuro**: de serie sigue el de Windows (y cambia solo si lo cambias en
   Windows). La bombilla de arriba a la derecha pasa a claro, a oscuro o vuelve a seguir a Windows
   (con una «A» pequeña). Se recuerda para la próxima vez.
+- **En español o en inglés**: de serie, en el idioma de Windows (en español si Windows está en
+  español, catalán, gallego o euskera; si no, en inglés). El botón *ES* / *EN* de arriba a la
+  derecha cambia de idioma o vuelve a seguir a Windows (con una «A» pequeña). Se recuerda para la
+  próxima vez.
+- **Ayuda a mano**: al pulsar la versión, arriba a la derecha (o en la portada), se abre este
+  README dentro de El Atril, en el idioma de la ventana. Con Atrás vuelves a lo que leías.
 - **Imágenes**: se ven las imágenes de la carpeta que salen en las hojas (`![texto](foto.png)` o
   `<img src="foto.png">`), con la ruta relativa a la hoja, como los enlaces. Las de internet no
   se cargan: sale un recuadro con su texto, igual que si la imagen no está o es demasiado grande
@@ -121,7 +127,7 @@ El Atril no se conecta a internet y solo lee los ficheros de la carpeta que abre
 guarda, en `%APPDATA%\El Atril`, es:
 
 - `recientes.json`: la lista de las últimas carpetas abiertas (sus rutas, nada de su contenido).
-- `memoria.json`: el tamaño de letra, el tema y, de cada carpeta, el nombre de la última hoja leída y por
+- `memoria.json`: el tamaño de letra, el tema, el idioma y, de cada carpeta, el nombre de la última hoja leída y por
   dónde ibas.
 
 Si borras esos ficheros, El Atril empieza de cero.
@@ -134,7 +140,6 @@ clic en ellos, y las imágenes de internet no se cargan.
 - No entra en carpetas ocultas (las que empiezan por `.`) ni en `node_modules`, `__pycache__`,
   `venv` o `site-packages`, que suelen estar llenas de documentación ajena.
 - En carpetas muy grandes muestra como mucho las primeras 2000 hojas, para no quedarse colgado.
-- La interfaz solo está en español.
 - Solo se ha probado en Windows 11.
 
 ## Cómo funciona por dentro
@@ -159,6 +164,9 @@ código se colorean con [Pygments](https://pygments.org/).
 - **0.5** (06-11-2026): primera version. Boton Abrir (o Ctrl+O) para elegir una carpeta y leer sus hojas .md con panel lateral, enlaces entre hojas, atras y adelante, buscador en la hoja y en todas las hojas, recargar con F5 y los Excel de la carpeta para abrirlos aparte. La carpeta tambien se puede pasar al arrancar o arrastrar encima del .exe.
 - **0.6** (08-11-2026): al arrancar, el panel lateral muestra las ultimas carpetas abiertas para volver a ellas con un clic (se guardan en %APPDATA%\El Atril\recientes.json; las que ya no existen salen en gris y la x las quita de la lista). Boton rojo Cerrar (o Ctrl+W) para cerrar la carpeta abierta y volver a esa lista. El codigo pasa de la carpeta el_atril a app.
 - **0.7** (09-11-2026): indice de la hoja en el panel para saltar a cada apartado. Al volver a una carpeta abre la ultima hoja leida y a la misma altura. Tamano de letra ajustable (botones A- y A+, Ctrl+rueda, Ctrl +/- y Ctrl+0). Los enlaces a otros ficheros de la carpeta (PDF, imagenes...) se abren con su programa de Windows; los programas y scripts no se abren nunca. Tema claro y oscuro con el boton de la bombilla. Colores en los bloques de codigo que indican su lenguaje (Pygments). La hoja y el panel se actualizan solos cuando los .md cambian en disco y se quita el boton de recargar (F5 sigue funcionando). Letra, tema y ultima hoja de cada carpeta se guardan en %APPDATA%\El Atril\memoria.json.
+- **0.8** (13-11-2026): las imagenes de las hojas se ven dentro de la pagina (las de la carpeta, hasta 15 MB cada una); las de internet no se cargan y, como las que faltan o son demasiado grandes, salen como un recuadro con su texto. El tema sigue de serie al de Windows y cambia solo si se cambia en Windows; la bombilla pasa a claro, a oscuro o vuelve a seguir a Windows. Al arrancar se puede pasar un .md (o arrastrarlo encima del .exe, o usar Abrir con) y se abre su carpeta en esa hoja.
+- **0.9** (13-11-2026): icono propio, un atril azul con una hoja de Markdown, en la ventana, la barra de tareas y el .exe. Lanzado como script ya no se agrupa con python.exe en la barra de tareas.
+- **1.0** (14-11-2026): interfaz en espanol y en ingles. De serie sale en el idioma de Windows (en espanol si Windows esta en espanol, catalan, gallego o euskera; si no, en ingles) y el boton ES / EN cambia de idioma o vuelve a seguir a Windows; se guarda en memoria.json. La version sale siempre arriba a la derecha y al pulsarla se abre el README dentro del programa, en el idioma de la ventana (Atras vuelve a donde se estaba). Los README van dentro del .exe.
 
 ## Licencia
 

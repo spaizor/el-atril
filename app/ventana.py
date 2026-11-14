@@ -1,4 +1,5 @@
 """Ventana de El Atril (pywebview) y funciones que la pagina puede llamar desde JavaScript."""
+import json
 import os
 
 import webview
@@ -15,6 +16,11 @@ FONDOS = {'oscuro': '#16181d', 'claro': '#ffffff'}
 # Carpeta con la pagina (HTML, CSS y JS). Funciona igual como script y dentro del .exe,
 # porque el .spec copia la carpeta 'web' junto al paquete.
 CARPETA_WEB = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web')
+
+# README del programa, uno por idioma, para leerlo dentro al pulsar la version. Estan en la
+# carpeta del proyecto (encima de 'app'); en el .exe, el .spec los deja en la misma posicion.
+CARPETA_APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+READMES = {'es': 'README.md', 'en': 'README.en.md'}
 
 # Icono de la ventana y de la barra de tareas (se hace con icono/hacer_icono.py).
 ICONO = os.path.join(CARPETA_WEB, 'icono.ico')
@@ -37,12 +43,19 @@ def pagina():
     def leer(nombre):
         with open(os.path.join(CARPETA_WEB, nombre), encoding='utf-8') as f:
             return f.read()
+    # Los textos de los dos idiomas van dentro de la pagina: cambiar de idioma no necesita
+    # preguntar nada a Python (solo guardarlo).
+    textos = json.dumps(json.loads(leer('textos.json')), ensure_ascii=False)
     return (leer('index.html')
             .replace('/*__CSS__*/', leer('estilo.css'))
             .replace('/*__JS__*/', leer('app.js'))
+            .replace('/*__TEXTOS__*/', textos)
             .replace('__APP_VERSION__', APP_VERSION)
+            .replace('__MODO_IDIOMA__', memoria.idioma())
+            .replace('__IDIOMA_WINDOWS__', memoria.idioma_windows())
+            .replace('__IDIOMA__', memoria.idioma_efectivo())   # asi nace ya en su idioma...
             .replace('__MODO__', memoria.tema())
-            .replace('__TEMA__', memoria.tema_efectivo()))   # asi la pagina ya nace con su tema
+            .replace('__TEMA__', memoria.tema_efectivo()))   # ...y con su tema
 
 
 class Api:
@@ -176,6 +189,16 @@ class Api:
     def tema_windows(self):
         """'claro' u 'oscuro' segun Windows (la pagina lo mira cada poco en modo sistema)."""
         return memoria.tema_windows()
+
+    def readme(self, idioma):
+        """HTML del README del programa en ese idioma ('es' o 'en')."""
+        nombre = READMES.get(idioma, READMES['es'])
+        return {'nombre': nombre, 'html': Biblioteca(CARPETA_APP).leer(nombre)}
+
+    def poner_idioma(self, valor):
+        """Guarda el modo de idioma ('sistema', 'es' o 'en') y devuelve {modo, idioma}."""
+        modo = memoria.poner_idioma(valor)
+        return {'modo': modo, 'idioma': memoria.idioma_efectivo(modo)}
 
     def letra(self):
         """Tamano de letra guardado (en %)."""

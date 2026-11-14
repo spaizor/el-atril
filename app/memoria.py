@@ -2,6 +2,7 @@
 
 - el tamano de letra elegido (en %, 100 = normal);
 - el tema: el de Windows (por defecto), oscuro o claro;
+- el idioma: el de Windows (por defecto), espanol o ingles;
 - de cada carpeta, la ultima hoja que se leyo y por donde iba (scroll de 0 a 1).
 
 Va en un fichero aparte de recientes.json para no cambiar el formato de ese.
@@ -91,6 +92,45 @@ def poner_tema(valor):
     with _cerrojo:
         datos = _leer()
         datos['tema'] = v
+        _guardar(datos)
+    return v
+
+
+IDIOMAS = ('es', 'en')
+MODOS_IDIOMA = ('sistema',) + IDIOMAS   # 'sistema' = segun el idioma de Windows
+
+# Idiomas de Windows con los que se usa el espanol (el resto, ingles): espanol, catalan,
+# gallego y euskera. Son los codigos "primarios" de Windows (LANGID & 0x3FF).
+_WINDOWS_EN_ESPANOL = {0x0A, 0x03, 0x56, 0x2D}
+
+
+def idioma_windows():
+    """'es' si Windows esta en espanol (o catalan, gallego, euskera); si no, 'en'."""
+    try:
+        import ctypes
+        langid = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+        return 'es' if (langid & 0x3FF) in _WINDOWS_EN_ESPANOL else 'en'
+    except (AttributeError, OSError):
+        return 'en'
+
+
+def idioma():
+    """Modo de idioma elegido: 'sistema', 'es' o 'en'."""
+    v = _leer().get('idioma')
+    return v if v in MODOS_IDIOMA else MODOS_IDIOMA[0]
+
+
+def idioma_efectivo(modo=None):
+    """El idioma que toca: el elegido, o el de Windows si se sigue al sistema."""
+    modo = modo or idioma()
+    return idioma_windows() if modo == 'sistema' else modo
+
+
+def poner_idioma(valor):
+    v = valor if valor in MODOS_IDIOMA else MODOS_IDIOMA[0]
+    with _cerrojo:
+        datos = _leer()
+        datos['idioma'] = v
         _guardar(datos)
     return v
 

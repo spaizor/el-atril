@@ -6,6 +6,29 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const plegar=s=>Array.from(s).map(c=>c.length>1?c:c.normalize('NFD')[0].toLowerCase()[0]).join('');
 const slug=t=>plegar(t).trim().replace(/[^\p{L}\p{N}\s_-]/gu,'').replace(/\s/g,'-');
 
+// --- Idioma ----------------------------------------------------------------------------
+// Los textos de los dos idiomas vienen de textos.json (los mete ventana.pagina()). <html>
+// lleva data-idioma (el que se ve), data-modo-idioma (lo elegido: 'sistema', 'es' o 'en') y
+// data-idioma-windows. t('clave',{n:3}) da el texto con sus huecos {n} rellenos; si n es 1 y
+// existe 'clave_1', usa ese (singular).
+const TEXTOS=/*__TEXTOS__*/;
+function t(clave,v={}){
+  const T=TEXTOS[document.documentElement.dataset.idioma]||TEXTOS.es;
+  const s=(v.n===1&&T[clave+'_1'])||T[clave]||TEXTOS.es[clave]||clave;
+  return s.replace(/\{(\w+)\}/g,(m,k)=>k in v?v[k]:m);
+}
+// Pone los textos de los elementos marcados (data-t, data-t-title, data-t-ph). Las imágenes
+// rotas de las hojas llevan además data-src, que se añade al title.
+function traducir(raiz=document){
+  raiz.querySelectorAll('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t)});
+  raiz.querySelectorAll('[data-t-title]').forEach(e=>{
+    e.title=t(e.dataset.tTitle)+(e.dataset.src?': '+e.dataset.src:'');
+  });
+  raiz.querySelectorAll('[data-t-ph]').forEach(e=>{e.placeholder=t(e.dataset.tPh)});
+  if(raiz===document)$('version').textContent=t('version',{v:APP_VERSION});
+}
+traducir();   // ya, antes de que se pinte la barra
+
 let carpeta=null;            // {nombre, ruta, indice, inicio, truncada} de la carpeta abierta
 let indice=[];               // hojas .md y Excel de la carpeta
 let hist=[],pos=-1;          // historial para Atrás / Adelante
@@ -33,27 +56,29 @@ async function iniciar(){
 function bienvenida(){
   carpeta=null;indice=[];hist=[];pos=-1;actual=null;
   $('q').value='';marcas=[];mi=-1;$('cuenta').textContent='';
-  $('md').innerHTML=`<div class="bienvenida"><h1>El Atril</h1>
-    <p>Abre una carpeta con documentos Markdown (<code>.md</code>) para leerlos aquí. Verás todas sus hojas
-    en el panel de la izquierda, con buscador y enlaces entre ellas.</p>
-    <button class="grande" onclick="abrirCarpeta()">📂 Abrir carpeta…</button>
-    <p>También con Ctrl+O</p>
-    <p class="version">Versión ${APP_VERSION}</p></div>`;
+  pintarBienvenida();
   $('titulo').textContent='';
   activarBarra(false);
   pintarRecientes();
 }
+function pintarBienvenida(){
+  $('md').innerHTML=`<div class="bienvenida"><h1>El Atril</h1>
+    <p>${t('bienvenida.texto')}</p>
+    <button class="grande" onclick="abrirCarpeta()">${t('bienvenida.boton')}</button>
+    <p>${t('bienvenida.atajo')}</p>
+    <p class="version"><a onclick="verReadme()" title="${esc(t('version.title'))}">${t('version',{v:APP_VERSION})}</a></p></div>`;
+}
 async function pintarRecientes(lista){
   if(!lista)lista=await pywebview.api.recientes();
   const l=$('lado');l.innerHTML='';
-  if(!lista.length){l.innerHTML='<p class="vacio">Todavía no has abierto ninguna carpeta. Aquí saldrán las últimas que abras.</p>';return}
-  const h=document.createElement('h4');h.textContent='Carpetas recientes';l.appendChild(h);
+  if(!lista.length){l.innerHTML=`<p class="vacio">${esc(t('recientes.vacio'))}</p>`;return}
+  const h=document.createElement('h4');h.textContent=t('recientes.titulo');l.appendChild(h);
   for(const c of lista){
     const a=document.createElement('a');a.className='reciente'+(c.existe?'':' falta');
-    a.innerHTML=`📁 ${esc(c.nombre)}<small>${c.existe?'':'No se encuentra · '}${esc(c.ruta)}</small>`;
-    a.title=c.existe?c.ruta:'Esta carpeta ya no existe (o está en una unidad que no está conectada)';
+    a.innerHTML=`📁 ${esc(c.nombre)}<small>${c.existe?'':esc(t('recientes.falta'))+' · '}${esc(c.ruta)}</small>`;
+    a.title=c.existe?c.ruta:t('recientes.falta.title');
     a.onclick=()=>abrirReciente(c.ruta);
-    const x=document.createElement('span');x.className='quitar';x.textContent='×';x.title='Quitar de la lista';
+    const x=document.createElement('span');x.className='quitar';x.textContent='×';x.title=t('recientes.quitar');
     x.onclick=async e=>{e.stopPropagation();pintarRecientes(await pywebview.api.quitar_reciente(c.ruta))};
     a.appendChild(x);l.appendChild(a);
   }
@@ -87,10 +112,13 @@ function cargar(r){
     ir(r.inicio).then(()=>{if(r.scroll){const d=$('doc');d.scrollTop=r.scroll*(d.scrollHeight-d.clientHeight)}});
     return;
   }
-  $('md').innerHTML=`<div class="bienvenida"><h1>${esc(r.nombre)}</h1>
-    <p>En esta carpeta no hay ninguna hoja <code>.md</code>.</p>
-    <button class="grande" onclick="abrirCarpeta()">📂 Abrir otra carpeta…</button></div>`;
+  pintarSinHojas();
   $('titulo').textContent=r.ruta;
+}
+function pintarSinHojas(){
+  $('md').innerHTML=`<div class="bienvenida"><h1>${esc(carpeta.nombre)}</h1>
+    <p>${t('sinhojas.texto')}</p>
+    <button class="grande" onclick="abrirCarpeta()">${t('sinhojas.boton')}</button></div>`;
 }
 function activarBarra(si){
   for(const id of ['cerrar','q','prev','next','todas'])$(id).disabled=!si;
@@ -102,15 +130,16 @@ function pintarLado(){
   const l=$('lado');l.innerHTML='';enBusqueda=false;
   if(carpeta.truncada){
     const p=document.createElement('p');p.className='aviso';
-    p.textContent=`Carpeta muy grande: solo se muestran las primeras ${indice.filter(f=>f.tipo==='md').length} hojas.`;
+    p.textContent=t('lado.truncada',{n:indice.filter(f=>f.tipo==='md').length});
     l.appendChild(p);
   }
-  if(!indice.length){l.innerHTML+='<p class="vacio">No hay hojas .md en esta carpeta.</p>';return}
+  if(!indice.length){l.innerHTML+=`<p class="vacio">${esc(t('lado.vacio'))}</p>`;return}
   let grupo=null;
   for(const f of indice){
-    if(f.grupo!==grupo){grupo=f.grupo;const h=document.createElement('h4');h.textContent=grupo||carpeta.nombre;l.appendChild(h)}
+    const g=f.tipo==='xlsx'?t('grupo.excel'):(f.grupo||carpeta.nombre);
+    if(g!==grupo){grupo=g;const h=document.createElement('h4');h.textContent=g;l.appendChild(h)}
     const a=document.createElement('a');a.dataset.ruta=f.ruta;
-    a.innerHTML=f.tipo==='xlsx'?`📊 ${esc(f.titulo)}<small>se abre en Excel</small>`:`${esc(f.titulo)}<small>${esc(f.ruta)}</small>`;
+    a.innerHTML=f.tipo==='xlsx'?`📊 ${esc(f.titulo)}<small>${esc(t('lado.excel'))}</small>`:`${esc(f.titulo)}<small>${esc(f.ruta)}</small>`;
     if(f.ruta===actual)a.className='act';
     a.onclick=()=>f.tipo==='xlsx'?pywebview.api.abrir(f.ruta):ir(f.ruta);
     l.appendChild(a);
@@ -157,6 +186,7 @@ async function ir(ruta,ancla,guardar=true,buscar){
 }
 function mostrar(ruta,html,ancla,buscar){
   actual=ruta;$('md').innerHTML=html;$('titulo').textContent=ruta;
+  traducir($('md'));   // avisos que manda Python (imágenes que no se cargan, errores)
   document.querySelectorAll('#md h1,#md h2,#md h3,#md h4,#md h5,#md h6').forEach(h=>{h.id=slug(h.textContent)});
   const externos=[];   // enlaces a otros ficheros (PDF, imágenes...): se pregunta a Python si se pueden abrir
   document.querySelectorAll('#md a[href]').forEach(a=>{
@@ -165,20 +195,20 @@ function mostrar(ruta,html,ancla,buscar){
     if(h.startsWith('#')){a.onclick=e=>{e.preventDefault();salto(h.slice(1))};return}
     a.onclick=e=>e.preventDefault();
     // Otros esquemas (file:, C:/...) no: solo rutas relativas dentro de la carpeta.
-    if(/^[a-z][a-z0-9+.-]*:/i.test(h)){muerto(a,'No se abre aquí (solo se abren ficheros de esta carpeta)');return}
+    if(/^[a-z][a-z0-9+.-]*:/i.test(h)){muerto(a,t('enlace.esquema'));return}
     const m=h.match(/^([^#]*)(#(.*))?$/);
     let dest='',ancla=null;
     try{dest=m[1]&&resolver(ruta,decodeURIComponent(m[1]));ancla=m[3]?decodeURIComponent(m[3]):null}catch(e){dest=''}
-    if(!dest){muerto(a,'No se abre aquí');return}
+    if(!dest){muerto(a,t('enlace.no'));return}
     if(dest.toLowerCase().endsWith('.md')){
       if(indice.some(x=>x.ruta===dest&&x.tipo==='md'))a.onclick=e=>{e.preventDefault();ir(dest,ancla)};
-      else muerto(a,'Esta hoja no está en el panel (no existe o está en una carpeta que no se recorre)');
+      else muerto(a,t('enlace.hojaFalta'));
       return;
     }
     if(indice.some(x=>x.ruta===dest&&x.tipo==='xlsx')){
-      a.title='Se abre en Excel';a.onclick=e=>{e.preventDefault();pywebview.api.abrir(dest)};return;
+      a.title=t('enlace.excel');a.onclick=e=>{e.preventDefault();pywebview.api.abrir(dest)};return;
     }
-    muerto(a,'Comprobando…');externos.push({a,dest});
+    muerto(a,t('enlace.comprobando'));externos.push({a,dest});
   });
   if(externos.length)comprobarEnlaces(ruta,externos);
   document.querySelectorAll('#lado a[data-ruta]').forEach(a=>a.classList.toggle('act',a.dataset.ruta===ruta));
@@ -194,8 +224,6 @@ function mostrar(ruta,html,ancla,buscar){
 function muerto(a,aviso){a.className='muerto';a.title=aviso}
 // Los enlaces a ficheros que no son hojas se abren con su programa de Windows (el PDF con el
 // lector de PDF, la imagen con el visor...), salvo programas y scripts, que Python bloquea.
-const AVISOS={bloqueado:'Por seguridad, El Atril no abre programas ni scripts',
-  falta:'No se encuentra este fichero en la carpeta'};
 async function comprobarEnlaces(ruta,lista){
   const r=await pywebview.api.enlaces([...new Set(lista.map(x=>x.dest))]);
   if(ruta!==actual)return;   // mientras tanto se ha cambiado de hoja
@@ -203,9 +231,9 @@ async function comprobarEnlaces(ruta,lista){
     const st=r[dest];
     if(st==='fichero'||st==='carpeta'){
       a.className='externo';
-      a.title=st==='carpeta'?'Se abre en el Explorador de Windows':'Se abre con su programa de Windows';
+      a.title=t(st==='carpeta'?'enlace.carpeta':'enlace.fichero');
       a.onclick=e=>{e.preventDefault();pywebview.api.abrir(dest)};
-    }else muerto(a,AVISOS[st]||AVISOS.falta);
+    }else muerto(a,t(st==='bloqueado'?'enlace.bloqueado':'enlace.falta'));
   }
 }
 function salto(id){
@@ -213,7 +241,42 @@ function salto(id){
   if(!e){const s=slug(id);e=document.getElementById(s)||Array.from(document.querySelectorAll('#md [id]')).find(x=>x.id.startsWith(s))}
   if(e)e.scrollIntoView({block:'start'});
 }
-function volverA(p){pos=p;const h=hist[pos];pywebview.api.leer(h.ruta).then(x=>mostrar(h.ruta,x,h.ancla,h.buscar))}
+function volverA(p){
+  pos=p;const h=hist[pos];
+  if(h.readme){mostrarReadme(h.idioma);return}
+  if(h.portada){actual=null;if(carpeta)pintarSinHojas();else pintarBienvenida();$('titulo').textContent=carpeta?carpeta.ruta:'';flechas();return}
+  pywebview.api.leer(h.ruta).then(x=>mostrar(h.ruta,x,h.ancla,h.buscar));
+}
+
+// --- README de El Atril (al pulsar la versión) -----------------------------------------
+// Se lee como una hoja más, pero sin tocar la carpeta abierta: entra en el historial, así que
+// Atrás vuelve a donde se estaba. Si no había historial (portada), se apunta la portada antes.
+async function verReadme(){
+  if(pos>=0&&hist[pos].readme)return;
+  if(pos<0){hist=[{portada:true}];pos=0}
+  const idioma=document.documentElement.dataset.idioma;
+  hist=hist.slice(0,pos+1);hist.push({readme:true,idioma});pos=hist.length-1;
+  await guardarPos();
+  await mostrarReadme(idioma);
+}
+async function mostrarReadme(idioma){
+  const r=await pywebview.api.readme(idioma);
+  actual=null;$('md').innerHTML=r.html;traducir($('md'));$('titulo').textContent=r.nombre;
+  document.querySelectorAll('#md h1,#md h2,#md h3,#md h4,#md h5,#md h6').forEach(h=>{h.id=slug(h.textContent)});
+  document.querySelectorAll('#md a[href]').forEach(a=>{
+    const h=a.getAttribute('href');
+    if(/^(https?|mailto):/i.test(h)){a.target='_blank';a.className='externo';a.title=h;return}
+    if(h.startsWith('#')){a.onclick=e=>{e.preventDefault();salto(h.slice(1))};return}
+    a.onclick=e=>e.preventDefault();
+    const m=h.match(/^README(\.en)?\.md$/i);   // "English version" / "Versión en español"
+    if(m){const i=m[1]?'en':'es';a.onclick=e=>{e.preventDefault();hist[pos].idioma=i;mostrarReadme(i)};return}
+    muerto(a,t('enlace.no'));
+  });
+  document.querySelectorAll('#lado a.act').forEach(a=>a.classList.remove('act'));
+  pintarApartados();flechas();
+  $('doc').scrollTop=0;
+  resaltar($('q').value.trim());
+}
 function atras(){if(pos>0)volverA(pos-1)}
 function adelante(){if(pos<hist.length-1)volverA(pos+1)}
 // F5: lo mismo que hace solo la vigilancia, pero a mano y de golpe (por si acaso, p. ej. en
@@ -304,7 +367,6 @@ function cambiarLetra(v){
 // data-tema es el que se ve. La bombilla da la vuelta: Windows → el contrario del que se ve →
 // el mismo que Windows → otra vez Windows (así cada clic cambia algo).
 
-const ACCION_MODO={sistema:'seguir el tema de Windows',claro:'pasar al tema claro',oscuro:'pasar al tema oscuro'};
 let temaWindows=null;        // 'claro' u 'oscuro' según Windows (se mira cada 2 s en modo sistema)
 let tTema=0;
 
@@ -315,8 +377,8 @@ function siguienteModo(){
 }
 function pintarTema(){
   const {modo,tema}=document.documentElement.dataset;
-  const ahora=modo==='sistema'?`el de Windows (ahora ${tema})`:tema;
-  $('tema').title=`Tema: ${ahora}. Clic para ${ACCION_MODO[siguienteModo()]}`;
+  const nombre=t('tema.'+tema),ahora=modo==='sistema'?t('tema.sistema',{tema:nombre}):nombre;
+  $('tema').title=t('tema.title',{ahora,accion:t('tema.ir.'+siguienteModo())});
 }
 function ponerTema(modo,tema){
   const d=document.documentElement.dataset;
@@ -340,6 +402,43 @@ async function iniciarTema(){
   ponerTema(d.modo,d.tema);
 }
 
+// --- Idioma: botón ES / EN -------------------------------------------------------------
+// Igual que la bombilla: Windows → el otro idioma → el de Windows elegido a mano → Windows.
+// El idioma de Windows no se vigila (casi nunca cambia con la app abierta): se mira al
+// arrancar. Al cambiar se repinta todo lo que tiene texto, sin moverse de donde se lee.
+
+function siguienteIdioma(){
+  const {modoIdioma:modo,idioma,idiomaWindows}=document.documentElement.dataset;
+  if(modo==='sistema')return idioma==='es'?'en':'es';
+  return modo===idiomaWindows?'sistema':(modo==='es'?'en':'es');
+}
+function pintarIdioma(){
+  const {modoIdioma:modo,idioma}=document.documentElement.dataset;
+  $('idioma').dataset.modo=modo;
+  $('idioma').firstChild.textContent=idioma.toUpperCase();
+  const nombre=t('idioma.'+idioma),ahora=modo==='sistema'?t('idioma.sistema',{idioma:nombre}):nombre;
+  $('idioma').title=t('idioma.title',{ahora,accion:t('idioma.ir.'+siguienteIdioma())});
+}
+async function cambiarIdioma(){
+  const r=await pywebview.api.poner_idioma(siguienteIdioma());
+  const d=document.documentElement;
+  const cambia=r.idioma!==d.dataset.idioma;
+  d.dataset.modoIdioma=r.modo;d.dataset.idioma=d.lang=r.idioma;
+  pintarIdioma();
+  if(cambia)repintarTextos();
+}
+async function repintarTextos(){
+  traducir();pintarTema();
+  if(!carpeta)pintarRecientes();
+  else if(enBusqueda)await buscarTodas();
+  else{const sc=$('lado').scrollTop;pintarLado();$('lado').scrollTop=sc}
+  const h=hist[pos];
+  if(h&&h.readme){h.idioma=document.documentElement.dataset.idioma;await mostrarReadme(h.idioma)}
+  else if(actual)await refrescarHoja();   // títulos de los enlaces, imágenes, contador de la búsqueda
+  else if(carpeta)pintarSinHojas();
+  else pintarBienvenida();
+}
+
 // --- Búsqueda --------------------------------------------------------------------------
 
 function limpiar(){
@@ -352,7 +451,7 @@ function limpiar(){
 const BLOQUES='p,li,pre,td,th,h1,h2,h3,h4,h5,h6,blockquote,dt,dd,div';
 function resaltar(q){
   limpiar();$('cuenta').textContent='';
-  if(q.length<2||!actual)return;
+  if(q.length<2||(!actual&&!(pos>=0&&hist[pos].readme)))return;
   const fq=plegar(q);
   // Todo el texto de la hoja, plegado, con '\n' entre bloques (la búsqueda nunca lleva '\n').
   const w=document.createTreeWalker($('md'),NodeFilter.SHOW_TEXT);
@@ -384,24 +483,24 @@ function resaltar(q){
     }
     frag.appendChild(document.createTextNode(t.slice(ult)));n.parentNode.replaceChild(frag,n);
   }
-  if(marcas.length){mi=-1;siguiente(1)}else $('cuenta').textContent='0 de 0';
+  if(marcas.length){mi=-1;siguiente(1)}else $('cuenta').textContent=t('cuenta',{i:0,n:0});
 }
 function siguiente(d){
   if(!marcas.length)return;
   if(mi>=0)marcas[mi].forEach(m=>m.classList.remove('cur'));
   mi=(mi+d+marcas.length)%marcas.length;
   marcas[mi].forEach(m=>m.classList.add('cur'));marcas[mi][0].scrollIntoView({block:'center'});
-  $('cuenta').textContent=`${mi+1} de ${marcas.length}`;
+  $('cuenta').textContent=t('cuenta',{i:mi+1,n:marcas.length});
 }
 async function buscarTodas(){
   if(!carpeta)return;
   const q=$('q').value.trim();if(q.length<2)return;
   const r=await pywebview.api.buscar(q);
   const l=$('lado');l.innerHTML='';enBusqueda=true;
-  const c=document.createElement('a');c.innerHTML='← Volver a la lista de hojas';c.onclick=()=>pintarLado();l.appendChild(c);
-  const h=document.createElement('h4');h.textContent=`"${q}" en ${r.length} hojas`;l.appendChild(h);
+  const c=document.createElement('a');c.textContent=t('todas.volver');c.onclick=()=>pintarLado();l.appendChild(c);
+  const h=document.createElement('h4');h.textContent=t('todas.titulo',{q,n:r.length});l.appendChild(h);
   for(const f of r){
-    const a=document.createElement('a');a.innerHTML=`${esc(f.titulo)}<small>${f.total} coincidencias · ${esc(f.ruta)}</small>`;
+    const a=document.createElement('a');a.innerHTML=`${esc(f.titulo)}<small>${esc(t('todas.coincidencias',{n:f.total}))} · ${esc(f.ruta)}</small>`;
     a.onclick=()=>ir(f.ruta,null,true,q);l.appendChild(a);
     for(const s of f.trozos){
       const d=document.createElement('div');d.className='res';
@@ -429,6 +528,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('menos').onclick=()=>cambiarLetra(letra-10);$('mas').onclick=()=>cambiarLetra(letra+10);
   $('letra').onclick=()=>cambiarLetra(100);
   $('tema').onclick=cambiarTema;
+  $('idioma').onclick=cambiarIdioma;pintarIdioma();
+  $('version').onclick=verReadme;
   let raf=0;
   $('doc').addEventListener('scroll',()=>{
     if(!raf)raf=requestAnimationFrame(()=>{raf=0;marcarApartado()});

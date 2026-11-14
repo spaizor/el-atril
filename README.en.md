@@ -10,13 +10,11 @@ It is meant for reading documentation: a project's docs, notes, a guide split in
 linked files. It is read-only; keep editing your `.md` files in your usual editor and El Atril
 shows the changes as soon as you save.
 
-> The user interface is currently in Spanish only.
-
 ## Features
 
-- **Open any folder** with the *Abrir* (Open) button or Ctrl+O. Subfolders are included.
+- **Open any folder** with the *Open* button or Ctrl+O. Subfolders are included.
 - **Recent folders**: on startup, the side panel lists the last folders you opened so you can
-  go back to them with one click (the × removes them from the list). The *Cerrar* (Close) button or Ctrl+W closes the open
+  go back to them with one click (the × removes them from the list). The *Close* button or Ctrl+W closes the open
   folder and goes back to that list.
 - **Side panel** listing every page, grouped by folder and shown by its title (the first
   `# Title` in the file).
@@ -37,6 +35,12 @@ shows the changes as soon as you save.
 - **Light and dark theme**: by default it follows Windows (and switches on its own when you
   change it in Windows). The light bulb at the top right switches to light, to dark, or back to
   following Windows (shown with a small "A"). It is remembered for next time.
+- **In English or Spanish**: by default, in the Windows language (Spanish if Windows is in
+  Spanish, Catalan, Galician or Basque; English otherwise). The *ES* / *EN* button at the top
+  right switches language or goes back to following Windows (shown with a small "A"). It is
+  remembered for next time.
+- **Help at hand**: click the version number at the top right (or on the start page) to open
+  this README inside El Atril, in the window's language. Back takes you to what you were reading.
 - **Images**: images from the folder used in your pages (`![text](photo.png)` or
   `<img src="photo.png">`) are shown, with paths relative to the page, like links. Images from
   the internet are not loaded: a small box with their text is shown instead, the same as when an
@@ -82,7 +86,7 @@ This creates `dist\El Atril.exe`, a single file that runs without Python install
 
 ## Usage
 
-When it opens, click **Abrir carpeta…** (Open folder) and choose the folder with your documents.
+When it opens, click **Open folder…** and choose the folder with your documents.
 You can also pass the folder on start-up to open it straight away:
 
 ```powershell
@@ -120,7 +124,7 @@ El Atril does not connect to the internet and only reads the files in the folder
 it stores, in `%APPDATA%\El Atril`, is:
 
 - `recientes.json`: the list of recently opened folders (their paths, none of their content).
-- `memoria.json`: the font size, the theme and, for each folder, the name of the last page you read and how
+- `memoria.json`: the font size, the theme, the language and, for each folder, the name of the last page you read and how
   far down you were.
 
 Delete those files and El Atril starts from scratch.
@@ -133,7 +137,6 @@ the internet are not loaded.
 - It skips hidden folders (starting with `.`) and `node_modules`, `__pycache__`, `venv` and
   `site-packages`, which are usually full of third-party docs.
 - In very large folders it lists at most the first 2000 pages, so it does not hang.
-- The interface is in Spanish only.
 - Only tested on Windows 11.
 
 ## License

@@ -6,6 +6,8 @@ from PyInstaller.utils.hooks import collect_all
 
 # La pagina (HTML, CSS y JS) va dentro del .exe, en la misma ruta que tiene junto al paquete.
 datas = [('app/web', 'app/web')]
+# Los README tambien: se leen dentro del programa al pulsar la version.
+datas += [('README.md', '.'), ('README.en.md', '.')]
 binaries = []
 hiddenimports = ['mistune']
 

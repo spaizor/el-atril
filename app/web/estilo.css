@@ -43,6 +43,13 @@ border-radius:6px;padding:0 10px;font-size:14px;outline:none}
 #titulo{margin-left:auto;color:var(--tenue);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Bombilla del tema: apagada (gris) en el oscuro, encendida en el claro. Con una "A" pequena
    cuando sigue el tema de Windows (modo automatico). */
+#barra #version{background:none;border-color:transparent;color:var(--tenue);font-size:12.5px;padding:0 6px;margin-left:8px;white-space:nowrap}
+#barra #version:hover{color:var(--acento);border-color:transparent;text-decoration:underline}
+#md .bienvenida .version a{color:inherit;cursor:pointer;text-decoration:underline dotted}
+#md .bienvenida .version a:hover{color:var(--acento)}
+#barra #idioma{font-size:11px;font-weight:600;padding:0 6px;margin-left:4px;position:relative;min-width:34px}
+#barra #idioma b{display:none;position:absolute;right:1px;bottom:0;font-size:9px;line-height:1;color:var(--acento)}
+#barra #idioma[data-modo="sistema"] b{display:block}
 #barra #tema{font-size:15px;padding:0;margin-left:4px;position:relative}
 #barra #tema b{display:none;position:absolute;right:1px;bottom:0;font-size:9px;line-height:1;color:var(--acento)}
 :root[data-modo="sistema"] #barra #tema b{display:block}

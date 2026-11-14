@@ -1,26 +1,30 @@
 <!doctype html>
-<html lang="es" data-tema="__TEMA__" data-modo="__MODO__">
+<html lang="__IDIOMA__" data-idioma="__IDIOMA__" data-modo-idioma="__MODO_IDIOMA__" data-idioma-windows="__IDIOMA_WINDOWS__" data-tema="__TEMA__" data-modo="__MODO__">
 <head>
 <meta charset="utf-8">
 <title>El Atril</title>
 <style>/*__CSS__*/</style>
 </head>
 <body>
+<!-- Los textos salen de textos.json: data-t pone el texto, data-t-title el title y
+     data-t-ph el placeholder (los rellena traducir() en app.js). -->
 <div id="barra">
-  <button id="abrir" class="principal" title="Abrir una carpeta (Ctrl+O)">📂 Abrir</button>
-  <button id="cerrar" title="Cerrar la carpeta y volver a las recientes (Ctrl+W)" disabled>✕ Cerrar</button>
-  <button id="atras" title="Atrás (Alt+←)" disabled>◀</button>
-  <button id="adelante" title="Adelante (Alt+→)" disabled>▶</button>
-  <input id="q" placeholder="Buscar en esta hoja… (Ctrl+F; Intro = siguiente)" autocomplete="off" spellcheck="false" disabled>
-  <button id="prev" title="Anterior (Mayús+Intro)" disabled>↑</button>
-  <button id="next" title="Siguiente (Intro)" disabled>↓</button>
+  <button id="abrir" class="principal" data-t="abrir" data-t-title="abrir.title"></button>
+  <button id="cerrar" data-t="cerrar" data-t-title="cerrar.title" disabled></button>
+  <button id="atras" data-t-title="atras.title" disabled>◀</button>
+  <button id="adelante" data-t-title="adelante.title" disabled>▶</button>
+  <input id="q" data-t-ph="q.ph" autocomplete="off" spellcheck="false" disabled>
+  <button id="prev" data-t-title="prev.title" disabled>↑</button>
+  <button id="next" data-t-title="next.title" disabled>↓</button>
   <span id="cuenta"></span>
-  <button id="todas" title="Buscar en todas las hojas (Ctrl+Intro)" disabled>Buscar en todas</button>
-  <button id="menos" class="letra" title="Letra más pequeña (Ctrl+− o Ctrl+rueda)">A−</button>
-  <button id="letra" class="letra" title="Tamaño de letra. Clic para volver al normal (Ctrl+0)">100%</button>
-  <button id="mas" class="letra" title="Letra más grande (Ctrl++ o Ctrl+rueda)">A+</button>
+  <button id="todas" data-t="todas" data-t-title="todas.title" disabled></button>
+  <button id="menos" class="letra" data-t-title="menos.title">A−</button>
+  <button id="letra" class="letra" data-t-title="letra.title">100%</button>
+  <button id="mas" class="letra" data-t-title="mas.title">A+</button>
   <span id="titulo"></span>
-  <button id="tema" title="Tema"><span>💡</span><b>A</b></button>
+  <button id="version" data-t-title="version.title"></button>
+  <button id="idioma"><span></span><b>A</b></button>
+  <button id="tema"><span>💡</span><b>A</b></button>
 </div>
 <div id="lado"></div>
 <div id="doc"><div id="md"></div></div>

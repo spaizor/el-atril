@@ -188,7 +188,7 @@ class Biblioteca:
             titulo = re.sub(r'[*_`]', '', m.group(1)).strip() if m else os.path.basename(r)
             out.append(dict(ruta=r, titulo=titulo, grupo=os.path.dirname(r), tipo='md'))
         for r in self.excels():
-            out.append(dict(ruta=r, titulo=os.path.basename(r), grupo='Excel (se abren aparte)', tipo='xlsx'))
+            out.append(dict(ruta=r, titulo=os.path.basename(r), grupo='Excel', tipo='xlsx'))
         return out
 
     def inicio(self, indice):
@@ -205,7 +205,9 @@ class Biblioteca:
         try:
             return self._imagenes(ruta, self._md(self.texto(ruta)))
         except Exception as e:
-            return f'<p>No se pudo abrir <code>{html.escape(ruta)}</code>: {html.escape(str(e))}</p>'
+            # Los textos los pone el JS en su idioma (data-t: clave de textos.json).
+            return (f'<p><span data-t="hoja.error"></span> <code>{html.escape(ruta)}</code>: '
+                    f'{html.escape(str(e))}</p>')
 
     def _imagenes(self, ruta, codigo):
         """Cambia el src de las imagenes de la carpeta por su contenido (data: URI).
@@ -233,34 +235,33 @@ class Biblioteca:
                 # Las de internet no se cargan (El Atril no se conecta a nada): queda el aviso
                 # con su texto. Si la imagen esta dentro de un enlace (las insignias de los
                 # README), el enlace sigue funcionando.
-                return (f'<span class="img-rota" title="Imagen de internet (no se carga): '
-                        f'{html.escape(src)}">🖼 {html.escape(alt or "Imagen de internet")}</span>')
-            motivo = None
-            if re.match(r'^[a-z][a-z0-9+.-]*:', src, re.I) or src.startswith(('/', '\\')):
-                motivo = 'Solo se enseñan imágenes de esta carpeta'
+                motivo = 'img.internet'
+            elif re.match(r'^[a-z][a-z0-9+.-]*:', src, re.I) or src.startswith(('/', '\\')):
+                motivo = 'img.fuera'
             else:
                 rel = unquote(src.split('#', 1)[0].split('?', 1)[0])
                 p = self.ruta_absoluta(os.path.join(base, rel))
                 tipo = TIPOS_IMAGEN.get(os.path.splitext(rel)[1].lower())
                 if not p or not os.path.isfile(p):
-                    motivo = 'No se encuentra esta imagen en la carpeta'
+                    motivo = 'img.falta'
                 elif not tipo:
-                    motivo = 'Este tipo de imagen no se puede enseñar'
+                    motivo = 'img.tipo'
                 else:
                     tam = os.path.getsize(p)
                     if tam > MAX_IMAGEN or gastado + tam > MAX_IMAGENES_HOJA:
-                        motivo = 'Imagen demasiado grande para enseñarla aquí'
+                        motivo = 'img.grande'
                     else:
                         try:
                             with open(p, 'rb') as f:
                                 datos = base64.b64encode(f.read()).decode('ascii')
                         except OSError:
-                            motivo = 'No se pudo leer esta imagen'
+                            motivo = 'img.error'
                         else:
                             gastado += tam
                             return (etiqueta[:s.start()] + f'{s.group(1)}"data:{tipo};base64,{datos}"'
                                     + etiqueta[s.end():])
-            return (f'<span class="img-rota" title="{html.escape(motivo)}: {html.escape(src)}">'
+            # El motivo es una clave de textos.json: el title lo pone el JS en su idioma.
+            return (f'<span class="img-rota" data-t-title="{motivo}" data-src="{html.escape(src)}">'
                     f'🖼 {html.escape(alt or os.path.basename(src) or src)}</span>')
 
         return _IMG.sub(cambiar, codigo)
