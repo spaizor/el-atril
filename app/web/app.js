@@ -64,9 +64,16 @@ function bienvenida(){
 function pintarBienvenida(){
   $('md').innerHTML=`<div class="bienvenida"><h1>El Atril</h1>
     <p>${t('bienvenida.texto')}</p>
-    <button class="grande" onclick="abrirCarpeta()">${t('bienvenida.boton')}</button>
+    <button class="grande" data-accion="abrir">${t('bienvenida.boton')}</button>
     <p>${t('bienvenida.atajo')}</p>
-    <p class="version"><a onclick="verReadme()" title="${esc(t('version.title'))}">${t('version',{v:APP_VERSION})}</a></p></div>`;
+    <p class="version"><a data-accion="readme" title="${esc(t('version.title'))}">${t('version',{v:APP_VERSION})}</a></p></div>`;
+  acciones();
+}
+// Botones de las portadas (data-accion). No llevan onclick en el HTML porque la página solo
+// deja correr su propio script (Content-Security-Policy en index.html).
+function acciones(){
+  const que={abrir:abrirCarpeta,readme:verReadme};
+  $('md').querySelectorAll('[data-accion]').forEach(e=>{e.onclick=()=>que[e.dataset.accion]()});
 }
 async function pintarRecientes(lista){
   if(!lista)lista=await pywebview.api.recientes();
@@ -118,7 +125,8 @@ function cargar(r){
 function pintarSinHojas(){
   $('md').innerHTML=`<div class="bienvenida"><h1>${esc(carpeta.nombre)}</h1>
     <p>${t('sinhojas.texto')}</p>
-    <button class="grande" onclick="abrirCarpeta()">${t('sinhojas.boton')}</button></div>`;
+    <button class="grande" data-accion="abrir">${t('sinhojas.boton')}</button></div>`;
+  acciones();
 }
 function activarBarra(si){
   for(const id of ['cerrar','q','prev','next','todas'])$(id).disabled=!si;
@@ -184,8 +192,26 @@ async function ir(ruta,ancla,guardar=true,buscar){
   if(guardar){hist=hist.slice(0,pos+1);hist.push({ruta,ancla,buscar});pos=hist.length-1}
   mostrar(ruta,html,ancla,buscar);
 }
+// Mete el HTML de una hoja en la página. Las hojas pueden llevar HTML suelto, así que antes se
+// le quita lo que podría ejecutar algo, cargar de fuera o sacar la ventana de la página
+// (scripts, marcos, formularios, <meta> de redirección, atributos on...). Se hace en un
+// <template>, donde nada se ejecuta ni se carga. La Content-Security-Policy de index.html es
+// la segunda barrera.
+const PROHIBIDO='script,style,iframe,frame,frameset,object,embed,applet,meta,base,link,form,area,audio,video,source,track,template,set,animate';
+function ponerHoja(html){
+  const tpl=document.createElement('template');tpl.innerHTML=html;
+  tpl.content.querySelectorAll(PROHIBIDO).forEach(e=>e.remove());
+  tpl.content.querySelectorAll('*').forEach(e=>{
+    const svgA=e.localName==='a'&&e.namespaceURI!=='http://www.w3.org/1999/xhtml';
+    for(const a of Array.from(e.attributes)){
+      const n=a.name.toLowerCase();
+      if(n.startsWith('on')||n==='srcset'||n==='formaction'||(svgA&&n.endsWith('href')))e.removeAttribute(a.name);
+    }
+  });
+  $('md').replaceChildren(tpl.content);
+}
 function mostrar(ruta,html,ancla,buscar){
-  actual=ruta;$('md').innerHTML=html;$('titulo').textContent=ruta;
+  actual=ruta;ponerHoja(html);$('titulo').textContent=ruta;
   traducir($('md'));   // avisos que manda Python (imágenes que no se cargan, errores)
   document.querySelectorAll('#md h1,#md h2,#md h3,#md h4,#md h5,#md h6').forEach(h=>{h.id=slug(h.textContent)});
   const externos=[];   // enlaces a otros ficheros (PDF, imágenes...): se pregunta a Python si se pueden abrir
@@ -261,15 +287,15 @@ async function verReadme(){
 }
 async function mostrarReadme(idioma){
   const r=await pywebview.api.readme(idioma);
-  actual=null;$('md').innerHTML=r.html;traducir($('md'));$('titulo').textContent=r.nombre;
+  actual=null;ponerHoja(r.html);traducir($('md'));$('titulo').textContent=r.nombre;
   document.querySelectorAll('#md h1,#md h2,#md h3,#md h4,#md h5,#md h6').forEach(h=>{h.id=slug(h.textContent)});
   document.querySelectorAll('#md a[href]').forEach(a=>{
     const h=a.getAttribute('href');
     if(/^(https?|mailto):/i.test(h)){a.target='_blank';a.className='externo';a.title=h;return}
     if(h.startsWith('#')){a.onclick=e=>{e.preventDefault();salto(h.slice(1))};return}
     a.onclick=e=>e.preventDefault();
-    const m=h.match(/^README(\.en)?\.md$/i);   // "English version" / "Versión en español"
-    if(m){const i=m[1]?'en':'es';a.onclick=e=>{e.preventDefault();hist[pos].idioma=i;mostrarReadme(i)};return}
+    const m=h.match(/^README(\.en)?\.md(#(.*))?$/i);   // "English version" / "Versión en español" (con o sin #apartado)
+    if(m){const i=m[1]?'en':'es';a.onclick=async e=>{e.preventDefault();hist[pos].idioma=i;await mostrarReadme(i);if(m[3])salto(decodeURIComponent(m[3]))};return}
     muerto(a,t('enlace.no'));
   });
   document.querySelectorAll('#lado a.act').forEach(a=>a.classList.remove('act'));

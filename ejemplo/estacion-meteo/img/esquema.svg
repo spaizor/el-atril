@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" font-family="Segoe UI, Arial, sans-serif">
+  <style>.t{font-size:15px;font-weight:600;fill:#fff;text-anchor:middle}.s{font-size:12px;fill:#fff;opacity:.85;text-anchor:middle}.c{font-size:11.5px;fill:#51607a;text-anchor:middle}</style>
+  <defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0l10 5-10 5z" fill="#7a8aa5"/></marker></defs>
+  <rect width="720" height="300" rx="14" fill="#f3f6fb" stroke="#d5deeb"/>
+  <rect x="30" y="30" width="170" height="60" rx="10" fill="#e8590c"/><text x="115.0" y="57.0" class="t">Temperatura</text><text x="115.0" y="75.0" class="s">BME280 · I²C</text>
+  <rect x="30" y="120" width="170" height="60" rx="10" fill="#2f9e44"/><text x="115.0" y="147.0" class="t">Lluvia</text><text x="115.0" y="165.0" class="s">pluviómetro de balancín</text>
+  <rect x="30" y="210" width="170" height="60" rx="10" fill="#7048e8"/><text x="115.0" y="237.0" class="t">Luz</text><text x="115.0" y="255.0" class="s">fotorresistencia</text>
+  <rect x="290" y="105" width="170" height="90" rx="10" fill="#1c7ed6"/><text x="375.0" y="147.0" class="t">Placa</text><text x="375.0" y="165.0" class="s">Raspberry Pi Pico W</text>
+  <rect x="540" y="60" width="150" height="60" rx="10" fill="#495057"/><text x="615.0" y="87.0" class="t">Ordenador</text><text x="615.0" y="105.0" class="s">CSV · SQLite</text>
+  <rect x="540" y="180" width="150" height="60" rx="10" fill="#0c8599"/><text x="615.0" y="207.0" class="t">Panel web</text><text x="615.0" y="225.0" class="s">en el navegador</text>
+  <g stroke="#7a8aa5" stroke-width="2" fill="none" marker-end="url(#f)">
+    <path d="M200 60C245 60 245 130 290 130"/><path d="M200 150H290"/><path d="M200 240C245 240 245 170 290 170"/>
+    <path d="M460 135C500 135 500 90 540 90"/><path d="M460 165C500 165 500 210 540 210"/>
+  </g>
+  <text x="245" y="88" class="c">GP4 / GP5</text><text x="245" y="143" class="c">GP15</text><text x="245" y="228" class="c">GP26 (ADC)</text>
+  <text x="500" y="100" class="c">USB</text><text x="500" y="205" class="c">Wi-Fi</text>
+</svg>

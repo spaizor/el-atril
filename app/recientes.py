@@ -20,7 +20,7 @@ def _leer():
     try:
         with open(FICHERO, encoding='utf-8') as f:
             datos = json.load(f)
-        return [r for r in datos if isinstance(r, str)]
+        return [r for r in datos if isinstance(r, str)] if isinstance(datos, list) else []
     except (OSError, ValueError):
         return []
 

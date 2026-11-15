@@ -2,6 +2,9 @@
 <html lang="__IDIOMA__" data-idioma="__IDIOMA__" data-modo-idioma="__MODO_IDIOMA__" data-idioma-windows="__IDIOMA_WINDOWS__" data-tema="__TEMA__" data-modo="__MODO__">
 <head>
 <meta charset="utf-8">
+<!-- Solo corre el script de El Atril (el del nonce, que pone ventana.pagina()) y la pagina no
+     puede conectarse a nada: lo que venga dentro de una hoja ni ejecuta ni carga de internet. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-__NONCE__'; style-src 'unsafe-inline'; img-src data:; form-action 'none'; base-uri 'none'">
 <title>El Atril</title>
 <style>/*__CSS__*/</style>
 </head>
@@ -28,6 +31,6 @@
 </div>
 <div id="lado"></div>
 <div id="doc"><div id="md"></div></div>
-<script>/*__JS__*/</script>
+<script nonce="__NONCE__">/*__JS__*/</script>
 </body>
 </html>

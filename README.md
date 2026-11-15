@@ -1,55 +1,38 @@
+<p align="center"><img src="icono/icono.svg" alt="Icono de El Atril" width="110"></p>
+
 # El Atril
 
 *[English version](README.en.md)*
 
-Lector de Markdown para Windows. Abres una carpeta y El Atril te enseña todas sus hojas `.md`
-con formato, en tema claro u oscuro, con un panel lateral para saltar de una a otra, buscador y
-navegación atrás / adelante, como si fuera una pequeña web de documentación.
+**Lector de Markdown para Windows.** Abres una carpeta y El Atril te enseña todas sus hojas
+`.md` con formato, en tema claro u oscuro, con un panel lateral para saltar de una a otra,
+buscador y navegación atrás / adelante, como si fuera una pequeña web de documentación.
+
+![El Atril en tema claro, con la portada de una carpeta de ejemplo](capturas/claro-es.png)
 
 Está pensado para leer documentación: la de un proyecto, unos apuntes, una guía repartida en
 varios ficheros que se enlazan entre sí. Solo lee; para editar los `.md` sigue usando tu editor
 de siempre: El Atril enseña los cambios en cuanto guardas.
 
+- Un único `.exe`, sin instalador.
+- En español y en inglés, en tema claro y oscuro.
+- No se conecta a internet.
+
+## Descarga
+
+Baja `El Atril.exe` de la [última versión publicada](https://github.com/spaizor/el-atril/releases/latest)
+y ábrelo: no hay nada que instalar. Como el `.exe` no está firmado, la primera vez Windows puede
+enseñar el aviso azul de SmartScreen: pulsa *Más información* → *Ejecutar de todas formas*.
+
 ## Características
 
+### Leer
+
 - **Abre cualquier carpeta** con el botón *Abrir* (o Ctrl+O). Recorre también las subcarpetas.
-- **Carpetas recientes**: al arrancar, el panel lateral muestra las últimas carpetas que has
-  abierto para volver a ellas con un clic (la × las quita de la lista). El botón *Cerrar* (o Ctrl+W) cierra la carpeta abierta y vuelve
-  a esa lista.
-- **Panel lateral** con todas las hojas, agrupadas por carpeta y con el título de cada una
-  (el primer `# Título` del fichero).
-- **Índice de la hoja**: debajo de la hoja abierta, en el panel, salen sus títulos para saltar a
-  cada apartado. Se resalta el apartado que estás leyendo.
 - **Arranca en la portada**: si hay un `README.md`, `LEEME.md` o `index.md` en la raíz, empieza
   por ahí.
 - **Sigues donde lo dejaste**: al volver a una carpeta, abre la última hoja que leíste y a la
   misma altura.
-- **Tamaño de letra** ajustable con los botones *A−* y *A+*, con Ctrl+rueda o con Ctrl+ +/−
-  (Ctrl+0 lo deja normal). Se recuerda para la próxima vez.
-- **Enlaces entre hojas**: un enlace a otro `.md` de la carpeta lo abre dentro de El Atril,
-  incluidos los enlaces a un apartado (`hoja.md#apartado`). Los enlaces a webs se abren en tu
-  navegador.
-- **Enlaces a otros ficheros** de la carpeta (PDF, imágenes, documentos...): se abren con su
-  programa de Windows, y los enlaces a una carpeta, en el Explorador. Llevan una flechita ↗. Por
-  seguridad, los programas y scripts (`.exe`, `.bat`, `.ps1`, `.py`...) no se abren nunca y salen
-  en gris.
-- **Tema claro y oscuro**: de serie sigue el de Windows (y cambia solo si lo cambias en
-  Windows). La bombilla de arriba a la derecha pasa a claro, a oscuro o vuelve a seguir a Windows
-  (con una «A» pequeña). Se recuerda para la próxima vez.
-- **En español o en inglés**: de serie, en el idioma de Windows (en español si Windows está en
-  español, catalán, gallego o euskera; si no, en inglés). El botón *ES* / *EN* de arriba a la
-  derecha cambia de idioma o vuelve a seguir a Windows (con una «A» pequeña). Se recuerda para la
-  próxima vez.
-- **Ayuda a mano**: al pulsar la versión, arriba a la derecha (o en la portada), se abre este
-  README dentro de El Atril, en el idioma de la ventana. Con Atrás vuelves a lo que leías.
-- **Imágenes**: se ven las imágenes de la carpeta que salen en las hojas (`![texto](foto.png)` o
-  `<img src="foto.png">`), con la ruta relativa a la hoja, como los enlaces. Las de internet no
-  se cargan: sale un recuadro con su texto, igual que si la imagen no está o es demasiado grande
-  (más de 15 MB).
-- **Atrás y adelante** como en un navegador (Alt+← y Alt+→).
-- **Buscador** en la hoja que estás leyendo, que resalta las coincidencias sin distinguir
-  mayúsculas ni tildes, y **búsqueda en todas las hojas** con un trocito de contexto de cada
-  resultado.
 - **Se actualiza solo**: si editas la hoja abierta en otro programa y guardas, El Atril la
   actualiza en un segundo sin moverte de donde estabas. Las hojas nuevas, renombradas o borradas
   también aparecen o desaparecen solas del panel. Solo mira las fechas de los ficheros (no vuelve
@@ -57,7 +40,51 @@ de siempre: El Atril enseña los cambios en cuanto guardas.
 - **Tablas, listas de tareas, tachado y bloques de código**, además del Markdown normal.
 - **Colores en el código**: los bloques que dicen su lenguaje (` ```python `, ` ```powershell `,
   ` ```json `...) salen coloreados, en los dos temas. Los bloques sin lenguaje salen sin colores.
+- **Imágenes**: se ven las imágenes de la carpeta que salen en las hojas (`![texto](foto.png)` o
+  `<img src="foto.png">`), con la ruta relativa a la hoja, como los enlaces. Las de internet no
+  se cargan: sale un recuadro con su texto, igual que si la imagen no está o es demasiado grande
+  (más de 15 MB).
+
+![El Atril en tema oscuro, con código coloreado y el índice de la hoja en el panel](capturas/oscuro-es.png)
+
+### Moverse
+
+- **Panel lateral** con todas las hojas, agrupadas por carpeta y con el título de cada una
+  (el primer `# Título` del fichero).
+- **Índice de la hoja**: debajo de la hoja abierta, en el panel, salen sus títulos para saltar a
+  cada apartado. Se resalta el apartado que estás leyendo.
+- **Enlaces entre hojas**: un enlace a otro `.md` de la carpeta lo abre dentro de El Atril,
+  incluidos los enlaces a un apartado (`hoja.md#apartado`). Los enlaces a webs se abren en tu
+  navegador.
+- **Enlaces a otros ficheros** de la carpeta (PDF, imágenes, documentos...): se abren con su
+  programa de Windows, y los enlaces a una carpeta, en el Explorador. Llevan una flechita ↗. Por
+  seguridad, los programas y scripts (`.exe`, `.bat`, `.ps1`, `.py`...) no se abren nunca y salen
+  en gris.
+- **Atrás y adelante** como en un navegador (Alt+← y Alt+→).
+- **Carpetas recientes**: al arrancar, el panel lateral muestra las últimas carpetas que has
+  abierto para volver a ellas con un clic (la × las quita de la lista). El botón *Cerrar* (o
+  Ctrl+W) cierra la carpeta abierta y vuelve a esa lista.
 - **Excel de la carpeta** en un apartado propio del panel: se abren con Excel, fuera de El Atril.
+
+### Buscar
+
+- **Buscador** en la hoja que estás leyendo, que resalta las coincidencias sin distinguir
+  mayúsculas ni tildes.
+- **Búsqueda en todas las hojas**, con un trocito de contexto de cada resultado.
+
+### A tu gusto
+
+- **Tema claro y oscuro**: de serie sigue el de Windows (y cambia solo si lo cambias en
+  Windows). La bombilla de arriba a la derecha pasa a claro, a oscuro o vuelve a seguir a Windows
+  (con una «A» pequeña). Se recuerda para la próxima vez.
+- **En español o en inglés**: de serie, en el idioma de Windows (en español si Windows está en
+  español, catalán, gallego o euskera; si no, en inglés). El botón *ES* / *EN* de arriba a la
+  derecha cambia de idioma o vuelve a seguir a Windows (con una «A» pequeña). Se recuerda para la
+  próxima vez.
+- **Tamaño de letra** ajustable con los botones *A−* y *A+*, con Ctrl+rueda o con Ctrl+ +/−
+  (Ctrl+0 lo deja normal). Se recuerda para la próxima vez.
+- **Ayuda a mano**: al pulsar la versión, arriba a la derecha (o en la portada), se abre este
+  README dentro de El Atril, en el idioma de la ventana. Con Atrás vuelves a lo que leías.
 
 ## Requisitos
 
@@ -66,45 +93,21 @@ de siempre: El Atril enseña los cambios en cuanto guardas.
   y con Windows 10 actualizado; si faltara, se descarga gratis desde la web de Microsoft.
 - Para ejecutarlo desde el código: **Python 3.13**.
 
-## Instalación
-
-Todavía no hay un `.exe` publicado: de momento se ejecuta desde el código.
-
-```powershell
-git clone https://github.com/spaizor/el-atril.git
-cd el-atril
-py -3.13 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python main.py
-```
-
-### Compilar el .exe
-
-```powershell
-.venv\Scripts\pyinstaller build.spec
-```
-
-Deja `dist\El Atril.exe`, un único fichero que funciona sin tener Python instalado.
-
 ## Uso
 
-Al abrirlo, pulsa **Abrir carpeta…** y elige la carpeta con tus documentos. También puedes
-pasarle la carpeta al arrancar, y así se abre directamente:
+Al abrirlo, pulsa **Abrir carpeta…** y elige la carpeta con tus documentos.
+
+También puedes **arrastrar una carpeta o un `.md` encima del `.exe`**: con una carpeta se abre
+directamente, y con un `.md` se abre su carpeta en esa hoja. Para abrir los `.md` con doble
+clic: botón derecho sobre un `.md` → *Abrir con* → *Elegir otra aplicación* → busca
+`El Atril.exe` y marca *Usar siempre esta aplicación*.
+
+Desde la línea de comandos vale lo mismo:
 
 ```powershell
-.venv\Scripts\python main.py "C:\ruta\a\mis documentos"
+& "El Atril.exe" "C:\ruta\a\mis documentos"
+& "El Atril.exe" "C:\ruta\a\mis documentos\guia.md"
 ```
-
-En vez de una carpeta también puedes pasarle una hoja `.md`: se abre su carpeta, directamente
-en esa hoja.
-
-```powershell
-.venv\Scripts\python main.py "C:\ruta\a\mis documentos\guia.md"
-```
-
-Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta o un `.md` encima del
-`.exe`**. Para abrir los `.md` con doble clic: botón derecho sobre un `.md` → *Abrir con* →
-*Elegir otra aplicación* → busca `El Atril.exe` y marca *Usar siempre esta aplicación*.
 
 ### Atajos de teclado
 
@@ -121,19 +124,24 @@ Con el `.exe` vale lo mismo, y además puedes **arrastrar una carpeta o un `.md`
 | Ctrl+rueda o Ctrl+ +/− | Letra más grande / más pequeña |
 | Ctrl+0 | Letra a su tamaño normal |
 
-## Privacidad
+## Privacidad y seguridad
 
 El Atril no se conecta a internet y solo lee los ficheros de la carpeta que abres. Lo único que
 guarda, en `%APPDATA%\El Atril`, es:
 
 - `recientes.json`: la lista de las últimas carpetas abiertas (sus rutas, nada de su contenido).
-- `memoria.json`: el tamaño de letra, el tema, el idioma y, de cada carpeta, el nombre de la última hoja leída y por
-  dónde ibas.
+- `memoria.json`: el tamaño de letra, el tema, el idioma y, de cada carpeta, el nombre de la
+  última hoja leída y por dónde ibas.
 
 Si borras esos ficheros, El Atril empieza de cero.
 
-Los enlaces a webs que haya dentro de tus documentos solo se abren, en tu navegador, si haces
-clic en ellos, y las imágenes de internet no se cargan.
+Abrir un documento no puede ejecutar nada:
+
+- Los enlaces a webs que haya dentro de tus documentos solo se abren, en tu navegador, si haces
+  clic en ellos, y las imágenes de internet no se cargan.
+- Las hojas pueden llevar HTML, pero El Atril le quita lo que podría ejecutar algo o cargar de
+  fuera (scripts, marcos, formularios...), y la página tiene prohibido conectarse a internet.
+- Los enlaces a programas y scripts no se abren nunca.
 
 ## Limitaciones conocidas
 
@@ -141,6 +149,32 @@ clic en ellos, y las imágenes de internet no se cargan.
   `venv` o `site-packages`, que suelen estar llenas de documentación ajena.
 - En carpetas muy grandes muestra como mucho las primeras 2000 hojas, para no quedarse colgado.
 - Solo se ha probado en Windows 11.
+
+## Ejecutarlo desde el código
+
+```powershell
+git clone https://github.com/spaizor/el-atril.git
+cd el-atril
+py -3.13 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python main.py
+```
+
+Para probarlo sin buscar una carpeta, el repositorio trae una de ejemplo (la de las capturas),
+en español y en inglés:
+
+```powershell
+.venv\Scripts\python main.py ejemplo\estacion-meteo
+.venv\Scripts\python main.py ejemplo\weather-station
+```
+
+### Compilar el .exe
+
+```powershell
+.venv\Scripts\pyinstaller build.spec
+```
+
+Deja `dist\El Atril.exe`, un único fichero que funciona sin tener Python instalado.
 
 ## Cómo funciona por dentro
 
@@ -153,10 +187,12 @@ código se colorean con [Pygments](https://pygments.org/).
 | `main.py` | Arranque: crea la ventana, con la carpeta o la hoja `.md` que se le pase, o sin ninguna |
 | `app/biblioteca.py` | Recorre la carpeta, convierte cada hoja a HTML (con sus imágenes dentro) y busca en ellas (Python puro, sin ventana) |
 | `app/recientes.py` | La lista de las últimas carpetas abiertas |
-| `app/memoria.py` | Lo que se recuerda entre sesiones: tamaño de letra, tema y última hoja de cada carpeta |
+| `app/memoria.py` | Lo que se recuerda entre sesiones: tamaño de letra, tema, idioma y última hoja de cada carpeta |
 | `app/ventana.py` | La ventana y las funciones que la página llama desde JavaScript |
-| `app/web/` | La página: `index.html`, `estilo.css` y `app.js`, y el icono `icono.ico` |
+| `app/web/` | La página: `index.html`, `estilo.css` y `app.js`; los textos de la interfaz en los dos idiomas, `textos.json`; y el icono `icono.ico` |
 | `icono/` | El dibujo del icono en SVG: `icono.svg` y `icono_pequeno.svg` (para 16-24 px) |
+| `capturas/` | Las capturas de estos README |
+| `ejemplo/` | Carpeta de ejemplo inventada, en español (`estacion-meteo`) y en inglés (`weather-station`) |
 | `build.spec` | Receta de PyInstaller para compilar el `.exe` |
 
 ## Historial de versiones
@@ -166,7 +202,7 @@ código se colorean con [Pygments](https://pygments.org/).
 - **0.7** (09-11-2026): indice de la hoja en el panel para saltar a cada apartado. Al volver a una carpeta abre la ultima hoja leida y a la misma altura. Tamano de letra ajustable (botones A- y A+, Ctrl+rueda, Ctrl +/- y Ctrl+0). Los enlaces a otros ficheros de la carpeta (PDF, imagenes...) se abren con su programa de Windows; los programas y scripts no se abren nunca. Tema claro y oscuro con el boton de la bombilla. Colores en los bloques de codigo que indican su lenguaje (Pygments). La hoja y el panel se actualizan solos cuando los .md cambian en disco y se quita el boton de recargar (F5 sigue funcionando). Letra, tema y ultima hoja de cada carpeta se guardan en %APPDATA%\El Atril\memoria.json.
 - **0.8** (13-11-2026): las imagenes de las hojas se ven dentro de la pagina (las de la carpeta, hasta 15 MB cada una); las de internet no se cargan y, como las que faltan o son demasiado grandes, salen como un recuadro con su texto. El tema sigue de serie al de Windows y cambia solo si se cambia en Windows; la bombilla pasa a claro, a oscuro o vuelve a seguir a Windows. Al arrancar se puede pasar un .md (o arrastrarlo encima del .exe, o usar Abrir con) y se abre su carpeta en esa hoja.
 - **0.9** (13-11-2026): icono propio, un atril azul con una hoja de Markdown, en la ventana, la barra de tareas y el .exe. Lanzado como script ya no se agrupa con python.exe en la barra de tareas.
-- **1.0** (14-11-2026): interfaz en espanol y en ingles. De serie sale en el idioma de Windows (en espanol si Windows esta en espanol, catalan, gallego o euskera; si no, en ingles) y el boton ES / EN cambia de idioma o vuelve a seguir a Windows; se guarda en memoria.json. La version sale siempre arriba a la derecha y al pulsarla se abre el README dentro del programa, en el idioma de la ventana (Atras vuelve a donde se estaba). Los README van dentro del .exe.
+- **1.0** (14-11-2026): interfaz en espanol y en ingles. De serie sale en el idioma de Windows (en espanol si Windows esta en espanol, catalan, gallego o euskera; si no, en ingles) y el boton ES / EN cambia de idioma o vuelve a seguir a Windows; se guarda en memoria.json. La version sale siempre arriba a la derecha y al pulsarla se abre el README dentro del programa, en el idioma de la ventana (Atras vuelve a donde se estaba). Los README van dentro del .exe, con su icono y sus capturas. Mas seguridad: al HTML de las hojas se le quita lo que podria ejecutar algo o cargar de fuera (scripts, marcos, formularios...) y la pagina no puede conectarse a internet. Carpeta de ejemplo en el repositorio, en espanol y en ingles. README nuevos con capturas.
 
 ## Licencia
 

@@ -1,6 +1,7 @@
 """Ventana de El Atril (pywebview) y funciones que la pagina puede llamar desde JavaScript."""
 import json
 import os
+import secrets
 
 import webview
 
@@ -46,7 +47,10 @@ def pagina():
     # Los textos de los dos idiomas van dentro de la pagina: cambiar de idioma no necesita
     # preguntar nada a Python (solo guardarlo).
     textos = json.dumps(json.loads(leer('textos.json')), ensure_ascii=False)
+    # El nonce cambia en cada arranque: solo el <script> de index.html puede ejecutarse (ver la
+    # Content-Security-Policy). Se pone antes de meter el CSS y el JS.
     return (leer('index.html')
+            .replace('__NONCE__', secrets.token_urlsafe(16))
             .replace('/*__CSS__*/', leer('estilo.css'))
             .replace('/*__JS__*/', leer('app.js'))
             .replace('/*__TEXTOS__*/', textos)

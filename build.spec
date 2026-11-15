@@ -8,6 +8,8 @@ from PyInstaller.utils.hooks import collect_all
 datas = [('app/web', 'app/web')]
 # Los README tambien: se leen dentro del programa al pulsar la version.
 datas += [('README.md', '.'), ('README.en.md', '.')]
+# Y las imagenes que salen en ellos (el icono y las capturas), en su misma ruta.
+datas += [('icono/icono.svg', 'icono'), ('capturas', 'capturas')]
 binaries = []
 hiddenimports = ['mistune']
 
